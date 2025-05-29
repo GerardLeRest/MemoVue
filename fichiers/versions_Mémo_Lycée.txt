@@ -1,0 +1,110 @@
+Mémo_Élèves
+
+* version 0.10
+- mode apprentissage
+- sélection de la classe par la recherche du dossier
+
+* version 0.11
+- mode apprentissage
+- sélection de la classe depuis un liste
+
+* version 0.12
+- mode apprentissage
+- class Memo_Eleve_Ihm(Frame): au lieu de class Memo_Eleve_Ihm: et class Application(Tk)
+
+* version 0.13
+- mode apprentissage
+- configuarion du mode aléatoire ou alphabétique
+- affichage ou absence d'affichage du nom 
+
+* version 0.14
+- mode apprentissage
+- choix de la classe déplacé vers la partie droite de la fenêtre
+
+* version 0.15
+- mode apprentissage
+- nettoyage code Application
+
+* version 0.20
+- modes apprentissage - test oral
+- insertion des boutons radios et gestion du mode test oral
+
+* version 0.30
+- modes apprentissage - test oral - test écrit
+- ajout du test écrit (validation uniquement par le bouton valider)
+- sans le nom pas encore géré
+
+* version 0.31
+- gestion des boutons entrées
+- bug: désactivation des boutons à la fin test écrit
+
+* version 0.32
+- utilisation de list_csv1 (utilise le fichier csv des élèves du lycée complet)
+
+* version 0.33
+- fenetre infos ajoutée
+- coches "aléatoire" et "sans le nom" décochées et activées
+- bug validation de classe sans avoir choisi une classe
+
+
+* version 0.34
+- utilise liste_eleves.py: utilise directement le nom des photos pour générer les listes d'élèves
+- bug linux: repertoire_racine=os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
+
+* version 0.35
+- joue "we are the champion" si succès au test et "la marche funèbre" si 0 réponse de bonne
+
+* VERSION 0.36
+- réutilise le fichier list_cvs2
+
+* VERSION 0.37
+- utilise le fichier list_cvs3 
+	* lancement automatique des fonctions
+	* utilise elevesLinux.csv ou Windows.csv qui intègrent les chemins des photos
+- bugg: désactivation pygame si "no device"
+- bugg: désaction des boutons de la frame basse" dans le mode "Test mental"
+
+* VERSION 0.38
+- ajout fonctionnalité "Rechercher": rechercher un membre dans le lycée
+- Mémo_Élèves devient Mémo_Lycée (changement de nom du logiciel)
+- réorganisation de la configuration suite à l'appui de valider (Frame droit haut)
+- affichage de la classe et des options dans la frame de gauche
+
+* VERSION 0.39
+- checkbutton "sans le prénom" remplacé par boutons radio "nom+prénom" "prénom"
+
+* VERSION 0.40
+- ajout bouton radio "nom" aux boutons radios "nom+prénom" "prénom"
+- mise en gris des labels de choix de la classe et de l'option (recherche)
+- bug (linux) dans fichier list_cvs3 -> list_cvs4: déplacement dans le répertoire courant du programme pour trouver les fichiers
+- en mode "Apprentissage", les élèves n'ayant pas de photos ne sont plus demandés => ajout colonne dans fichiers de config elevesLinux et WindowsLinux
+- Ajout du personnel OGEC
+- Inversion des frames droite et basse
+- bug: activation des boutons dans le mode recherche (bouton validation) et touche entrée (champs du prénom)
+
+* VERSION 0.41
+- Passage à Python3
+- Remplacement du combobox Pmw par un combobox tkinter
+
+* VERSION 0.42
+- Séparation des modules et du programme principal
+
+* version 0.42
+- Séparation des modules du programme principal
+
+* version 0.43
+- Modification de creationListeClasses du module list_csv5
+
+* version 0.44
+- déplacement de modules de Memo_Lycee-0-44 vers FrameDroiteHaute 
+
+* version 0.44.2 (10-02-25)
+  bibliothèque dans mon_env
+      -> python3 -m venv mon_env (création de l'environnement virtuel pour les librairies)
+      -> source mon_env/bin/activate (Cette commande active l'environnement virtuel)
+      -> pip install install (exemple installation de pygame dans l'environnement personnel)
+* version 0.45 (2-02-25)
+      -> refactoring des classes (CamelCase)
+      -> metodes, variables (snake_case)
+* version 0.51 remplacement du fichier CSV par une base de données SQLite
+
