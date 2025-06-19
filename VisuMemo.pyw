@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*
 
-#################################################
+##################################################
 # Apprendre ou retrouver le nom/prénom des élèves
 # du lycée
-#################################################
+##################################################
 
 import tkinter as tk
 from tkinter import ttk
@@ -381,5 +381,5 @@ class Application(tk.Tk):
 if __name__ == '__main__':
     App=Application()
     App.resizable(width=False,height=False)
-    App.title('MémoLycée')
+    App.title('VisuMemo')
     App.mainloop()

@@ -26,7 +26,7 @@ MémoLycée permet aussi de filtrer les élèves par classe et par option, et d�
 2. **Créer un environnement virtuel** :
    
    ```bash
-   python3 -m venv venv
+   python3 -m venv mon_env
    source venv/bin/activate  # sous Windows : venv\Scripts\activate
    ```
 
@@ -40,9 +40,9 @@ MémoLycée permet aussi de filtrer les élèves par classe et par option, et d�
 
 Le programme nécessite les bibliothèques suivantes :
 
-- `tkinter` (intégré à Python)
 - `Pillow` (pour l'affichage des images)
 - `sqlite3` (intégré à Python pour la gestion de la base de données)
+- 'PyQt5' (bibliothèque graphique)
 
 Tu peux aussi les installer manuellement si besoin :
 

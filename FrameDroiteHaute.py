@@ -118,7 +118,7 @@ class FrameDoiteHaute(tk.Frame):
         
 if __name__ == '__main__':     
     fenetre = tk.Tk()
-    Application=frame_droite_haute(fenetre)
+    Application= FrameDoiteHaute(fenetre)
     Application.repPrenomEntry.config(state=tk.NORMAL)
     Application.reponseNomEntry.config(state=tk.NORMAL)
     Application.boutVal.configure(state="normal")

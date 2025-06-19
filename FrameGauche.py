@@ -7,72 +7,88 @@
 ##########################################
 
 
-from PIL import Image, ImageTk
-import tkinter as tk
 import os
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QGridLayout, QLabel, QHBoxLayout, QPushButton
+from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtCore import QSize, Qt
 from ModifierBDD import  ModifierBDD
 
 repertoire_racine=os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
 icones=["Gnome-go-first.png","Gnome-go-previous.png","Gnome-go-next.png","Gnome-go-last.png", ]
 
-class FrameGauche (tk.Frame):
+class FrameGauche (QWidget):
     """ Créer la partie gauche de l'interface """
         
-    def __init__(self,fenetre: tk.Widget, listeEleves:list=[]):
+    def __init__(self,fenetre=None, listeEleves:list=[]):
         """Constructeur de la frame de gauche et de ses éléments"""
-        tk.Frame.__init__(self, fenetre) # constructeur de la classe parente
-        self.grid(row=0,column=0,rowspan=3,padx=10,pady=2)
+        super().__init__(fenetre) # constructeur de la classe parente
+        layoutGauche = QVBoxLayout()  # Removed undefined Layout
+        # poisition de LayoutGauche dans la fenetre principale de la fenêtreself.LayoutPrincipal(row=0,column=0,rowspan=3,padx=10,pady=2)
         self.listeEleves=listeEleves #liste des élèves
         self.rang=0     #rang de l'élève dans la classe
         self.modif_bdd = ModifierBDD("fichiers/eleves.db")
         self.nbreElev=0 # nbre élèves
-       # Identification des élèves
-        frameHaut = tk.Frame(self, relief=tk.GROOVE, bd=3)
-        frameHaut.pack(pady=3)
+        self.resize(150, 100) # définir une taille fixe pour la fenêtre
 
-        # Définir les StringVar
-        self.nom = tk.StringVar()
-        self.nom.set("Nom")
-        self.prenom = tk.StringVar()
-        self.prenom.set("Prénom")
-
-        # Associer les bons labels avec les bons StringVar
-        tk.Label(frameHaut, text="Nom:").grid(row=0, column=0, sticky=tk.W)
-        tk.Label(frameHaut, textvariable=self.nom, fg="brown", width=25, font=("Arial", 11)).grid(row=0, column=1, sticky=tk.W, padx=4, pady=4)
-        tk.Label(frameHaut, text="Prénom:").grid(row=1, column=0, sticky=tk.W)
-        tk.Label(frameHaut, textvariable=self.prenom, fg="brown", width=25, font=("Arial", 11)).grid(row=1, column=1, sticky=tk.W, padx=4, pady=4)
-
-        # Insertion de la photo de l'inconnu       
-        self.image = Image.open(repertoire_racine+os.sep+"fichiers"+os.sep+"images"+os.sep+"inconnu.jpg")  
-        self.photo = ImageTk.PhotoImage(self.image)  
-        self.index_photo = 3 # les photos sont dans la quatrième colonne
-        self.canvas = tk.Canvas(self, width = self.image.size[0], height = self.image.size[1])  
-        self.photoSurCanvas=self.canvas.create_image(0,0, anchor = tk.NW, image=self.photo) 
-        self.canvas.pack(pady=2)  
-        # boutons - choix de l'élève
-        frameBoutons = tk.Frame(self)
-        frameBoutons.pack(pady=2)
-        self.photos, self.boutons=[], []
-        fonctions=[self.accederPremier,self.accederPrecedent,self.accederSuivant,self.accederDernier]
-        for i in range(len(icones)):
-            image=Image.open(repertoire_racine+os.sep+"fichiers"+os.sep+"icones"+os.sep+icones[i])
-            self.photos.append(ImageTk.PhotoImage(image)) 
-            self.boutons.append(tk.Button(frameBoutons, image=self.photos[i], command=fonctions[i]))
-            self.boutons[i].pack(side=tk.LEFT, pady=2)
-            self.boutons[i].configure(state="disabled")
-        # affichage des élèves restants
-        self.numOrdreElev=tk.StringVar() # permet de changer le texte du label
-        self.numOrdreElev.set("rang/effectif ")
-        labelNumOrdreElev=tk.Label(self, textvariable=self.numOrdreElev,fg="black")
-        labelNumOrdreElev.pack(pady=2)
-        # affichage de la classe et des options
-        self.classe=tk.StringVar() # permet de changer le texte du label
-        self.classe.set("CLASSE-CATÉGORIE")
-        tk.Label(self, textvariable=self.classe, fg="darkorange",width=40, font=("Arial", 8)).pack(pady=2)
-        self.options=tk.StringVar() # permet de changer le texte du label
-        self.options.set("Options-Fonctions")
-        tk.Label(self, textvariable=self.options, fg="seagreen",width=40, font=("Arial", 8)).pack(pady=2)
+       
+        # Partie haute - QGridLayout
+        # prenom
+        layoutGrille = QGridLayout()
+        self.prenom = QLineEdit()
+        self.prenom.setPlaceholderText("Prénom")
+        layoutGrille.addWidget(self.prenom, 0, 1)
+        layoutGrille.addWidget(QLabel("Prenom"), 0, 0)
+        # nom
+        self.nom = QLineEdit()
+        self.nom.setPlaceholderText("Nom")
+        layoutGrille.addWidget(self.nom, 1, 1)
+        layoutGrille.addWidget(QLabel("Nom"), 1, 0) 
+        # attachement à layoutGauche
+        layoutGauche.addLayout(layoutGrille)
         
+        # partie au milieu de Layout
+        layoutMilieu = QVBoxLayout()
+        # Insertion de la photo de l'inconnu
+        self.labelImage = QLabel()
+        self.image = QPixmap(repertoire_racine+os.sep+"fichiers"+os.sep+"images"+os.sep+"inconnu.jpg")
+        self.labelImage.setPixmap(self.image) 
+        layoutMilieu.addWidget(self.labelImage,  alignment=Qt.AlignCenter)   
+        # QHBoxLayout - icones
+        layoutBoutons = QHBoxLayout()
+        # mise en place des quatre boutons 
+        fonctions=[self.accederPremier,self.accederPrecedent,self.accederSuivant,self.accederDernier]
+        icones=["Gnome-go-first.png","Gnome-go-previous.png","Gnome-go-next.png","Gnome-go-last.png", ]
+        self.boutons = [QPushButton() for _ in range(4)] # 4 boutons indépendants
+        for i in range(len(icones)):
+            self.boutons[i].setIcon(QIcon(repertoire_racine+os.sep+"fichiers"+os.sep+"icones"+os.sep+icones[i]))
+            self.boutons[i].setIconSize(QSize(24, 24))  # taille d'affichage de l'image
+            self.boutons[i].clicked.connect(fonctions[i])
+            layoutBoutons.addWidget(self.boutons[i])
+        layoutMilieu.addLayout(layoutBoutons)
+        # attachement à layoutGauche
+        layoutGauche.addLayout(layoutMilieu)
+
+        # affichage des élèves restants
+        layoutBas = QVBoxLayout()
+        self.numOrdreElev=QLabel() # permet de changer le texte du label
+        self.numOrdreElev.setText("rang/effectif ")
+        layoutBas.addWidget(self.numOrdreElev, alignment=Qt.AlignCenter)
+        # affichage de la classe 
+        self.classe=QLabel() # permet de changer le texte du label
+        self.classe.setText("CLASSE-CATÉGORIE")
+        layoutBas.addWidget(self.classe, alignment=Qt.AlignCenter)
+        # affichage des options
+        self.options = QLabel() # permet de changer le texte du label
+        self.options.setText("OPTIONS")
+        layoutBas.addWidget(self.options, alignment=Qt.AlignCenter)
+        # attachement au layout gauche
+        layoutGauche.addLayout(layoutBas)
+
+        # attachement à la fenêtre principale
+        self.setLayout(layoutGauche)
+
+        self.show()
+
     def accederPremier(self) -> None:
         """accéder au Premier élève de la liste"""
         self.rang=0
@@ -105,25 +121,24 @@ class FrameGauche (tk.Frame):
             
     def majPhoto(self) -> None:
         """ Met à jour la photo dans l'interface """
-        chemin_rel = self.listeEleves[self.rang][self.index_photo]
-        self.image = Image.open(chemin_rel)
-        self.photo = ImageTk.PhotoImage(self.image)
-        self.canvas.itemconfig(self.photoSurCanvas, image=self.photo)
-    
+        chemin_rel = self.listeEleves[self.rang][3]  # ← Exemple : 'fichiers/photos/1S1/Henry_Clement.jpg'
+        chemin_image = os.path.join(repertoire_racine, chemin_rel)  # ← Construction du chemin absolu
+        pixmap = QPixmap(chemin_image)
+        self.labelImage.setPixmap(pixmap)    
+
     def majNomPrenom(self) -> None:
         """Met à jour le nom et le prénom dans l'interface"""
         # Index [0] = prénom, [1] = nom
-        self.prenom.set(self.listeEleves[self.rang][0])  # Prénom
-        self.nom.set(self.listeEleves[self.rang][1])     # Nom
+        self.prenom.setText(self.listeEleves[self.rang][0])  # Prénom
+        self.nom.setText(self.listeEleves[self.rang][1])     # Nom
 
         
     def majClasseOptions(self) -> None:
         """Mettre à jour la classe et les options dans l'interface"""
-
-        prenom = self.prenom.get().strip().capitalize()
-        nom = self.nom.get().strip().upper()
+        prenom = self.prenom.text().strip().capitalize()
+        nom = self.nom.text().strip().upper()
         classe_nom = self.modif_bdd.determiner_classe(prenom, nom)
-        self.classe.set(classe_nom if classe_nom else "Classe inconnue")
+        self.classe.setText(classe_nom if classe_nom else "Classe inconnue")
         
         # résolution de -C-A-M- au lieu de CAM
         donnees = self.listeEleves[self.rang][2]
@@ -133,26 +148,28 @@ class FrameGauche (tk.Frame):
             listeOptions = donnees
 
         texte = " - ".join(listeOptions)
-        self.options.set(texte)
+        self.options.setText(texte)
         
     def majNumOrdreElev(self) -> None:
         """mettre à jour le numéro d'ordre de l'élève"""
         if self.nbreElev==len(self.listeEleves): # apprentissage
-            self.numOrdreElev.set(str(self.rang+1)+"/"+str(self.nbreElev))
+            self.numOrdreElev.setText(str(self.rang+1)+"/"+str(self.nbreElev))
         else: # test mental
-            self.numOrdreElev.set(str(self.rang//2+1)+"/"+str(self.nbreElev))  
+            self.numOrdreElev.setText(str(self.rang//2+1)+"/"+str(self.nbreElev))  
                 
 # ----------------------------------------------------
         
-if __name__ == '__main__':     
-    fenetre = tk.Tk()
-    liste = []
-    liste = [['Sarah', 'Fernandez', ['CAM', 'THE'], 'fichiers/photos/1S1/Fernandez Sarah.jpg'], ['Clément', 'Henry', ['CAM'], 'fichiers/photos/1S1/Henry Clément.jpg'], ['Tom', 'Lemoine', ['CAM'], 'fichiers/photos/TSTI2D2/Lemoine Tom.jpg']]
-    Application= FrameGauche(fenetre,liste) 
-    # activer les boutons frame gauche
-    for i in range(len(icones)):
-        Application.boutons[i].configure(state="active") 
-    # nombre d'élèves dans la classe
-    Application.nbreElev=len(liste)
-    print (Application.nbreElev)
-    fenetre.mainloop()
+from PyQt5.QtWidgets import QApplication
+
+if __name__ == '__main__':
+    import sys
+    app = QApplication(sys.argv)
+    liste = [
+        ['Sarah', 'Fernandez', ['CAM', 'THE'], 'fichiers/photos/1S1/Fernandez_Sarah.jpg'],
+        ['Clement', 'Henry', ['CAM'], 'fichiers/photos/1S1/Henry_Clement.jpg'],
+        ['Emma', 'Petit', ['ESP'], 'fichiers/photos/PSTI2D1/Petit_Emma.jpg']
+    ]
+    fenetre = FrameGauche(listeEleves=liste)
+    fenetre.nbreElev = len(liste)
+    fenetre.show()
+    sys.exit(app.exec_())
