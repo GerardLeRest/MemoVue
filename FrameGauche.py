@@ -22,7 +22,7 @@ class FrameGauche (QWidget):
     def __init__(self,fenetre=None, listeEleves:list=[]):
         """Constructeur de la frame de gauche et de ses éléments"""
         super().__init__(fenetre) # constructeur de la classe parente
-        layoutGauche = QVBoxLayout()  # Removed undefined Layout
+        layoutGauche = QVBoxLayout()  
         # poisition de LayoutGauche dans la fenetre principale de la fenêtreself.LayoutPrincipal(row=0,column=0,rowspan=3,padx=10,pady=2)
         self.listeEleves=listeEleves #liste des élèves
         self.rang=0     #rang de l'élève dans la classe
@@ -31,22 +31,25 @@ class FrameGauche (QWidget):
         self.resize(150, 100) # définir une taille fixe pour la fenêtre
 
        
-        # Partie haute - QGridLayout
+        # Partie haute du layout
+        # QGridLayout
         # prenom
         layoutGrille = QGridLayout()
-        self.prenom = QLineEdit()
-        self.prenom.setPlaceholderText("Prénom")
+        self.prenom = QLabel("-")
+        self.prenom.setText("Prénom")
+        self.prenom.setStyleSheet("border: 1px solid gray; padding: 2px;") # décoration
         layoutGrille.addWidget(self.prenom, 0, 1)
         layoutGrille.addWidget(QLabel("Prenom"), 0, 0)
         # nom
-        self.nom = QLineEdit()
-        self.nom.setPlaceholderText("Nom")
+        self.nom = QLabel()
+        self.nom.setText("Nom")
+        self.nom.setStyleSheet("border: 1px solid gray; padding: 2px;") # décoration
         layoutGrille.addWidget(self.nom, 1, 1)
         layoutGrille.addWidget(QLabel("Nom"), 1, 0) 
         # attachement à layoutGauche
         layoutGauche.addLayout(layoutGrille)
         
-        # partie au milieu de Layout
+        # Layout du milieu
         layoutMilieu = QVBoxLayout()
         # Insertion de la photo de l'inconnu
         self.labelImage = QLabel()
@@ -67,7 +70,8 @@ class FrameGauche (QWidget):
         layoutMilieu.addLayout(layoutBoutons)
         # attachement à layoutGauche
         layoutGauche.addLayout(layoutMilieu)
-
+		
+		# layout bas
         # affichage des élèves restants
         layoutBas = QVBoxLayout()
         self.numOrdreElev=QLabel() # permet de changer le texte du label

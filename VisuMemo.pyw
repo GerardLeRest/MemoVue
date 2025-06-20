@@ -30,8 +30,8 @@ class Application(tk.Tk):
         self.FrameDrHa.boutVal.bind("<Button-1>",self.verifierRechercher)
         self.FrameDrHa.boutEff.bind("<Button-1>",self.effacer)
         self.FrameDrHa.boutSuite.bind("<Button-1>",self.AllerALaSuite)
-        self.FrameDrHa.repPrenomEntry.bind('<Return>',self.validerRepNom)
-        self.FrameDrHa.reponseNomEntry.bind('<Return>',self.verifierRechercher)
+        self.FrameDrHa.PrenomEntry.bind('<Return>',self.validerRepNom)
+        self.FrameDrHa.nomEntry.bind('<Return>',self.verifierRechercher)
         # bouton info
         self.boutonInfo = tk.Button(self, text="Info")
         self.boutonInfo.grid(row=2,column=1,pady=2)
@@ -51,19 +51,19 @@ class Application(tk.Tk):
         """Activer ou désactiver les zones de saisie selon le mode"""
 
         if self.FrameDrBa.selectPrenNom.get() == "2":  # prénom seul
-            self.FrameDrHa.reponseNomEntry.config(state=tk.DISABLED)
-            self.FrameDrHa.repPrenomEntry.config(state=tk.NORMAL)
-            self.FrameDrHa.repPrenomEntry.focus_set()
+            self.FrameDrHa.nomEntry.config(state=tk.DISABLED)
+            self.FrameDrHa.PrenomEntry.config(state=tk.NORMAL)
+            self.FrameDrHa.PrenomEntry.focus_set()
 
         elif self.FrameDrBa.selectPrenNom.get() == "3":  # nom seul
-            self.FrameDrHa.repPrenomEntry.config(state=tk.DISABLED)
-            self.FrameDrHa.reponseNomEntry.config(state=tk.NORMAL)
-            self.FrameDrHa.reponseNomEntry.focus_set()
+            self.FrameDrHa.PrenomEntry.config(state=tk.DISABLED)
+            self.FrameDrHa.nomEntry.config(state=tk.NORMAL)
+            self.FrameDrHa.nomEntry.focus_set()
 
         else:  # nom + prénom
-            self.FrameDrHa.repPrenomEntry.config(state=tk.NORMAL)
-            self.FrameDrHa.reponseNomEntry.config(state=tk.NORMAL)
-            self.FrameDrHa.repPrenomEntry.focus_set()
+            self.FrameDrHa.PrenomEntry.config(state=tk.NORMAL)
+            self.FrameDrHa.nomEntry.config(state=tk.NORMAL)
+            self.FrameDrHa.PrenomEntry.focus_set()
             
     def DonnerNomPrenom(self) -> None:
         """Donner le nom/prénom si la photo est absente"""
@@ -208,8 +208,8 @@ class Application(tk.Tk):
             return  # ne rien faire si ce n’est pas un rang pair
 
         # Récupération des réponses utilisateur
-        nom = self.FrameDrHa.reponseNomEntry.get().strip()
-        prenom = self.FrameDrHa.repPrenomEntry.get().strip()
+        nom = self.FrameDrHa.nomEntry.get().strip()
+        prenom = self.FrameDrHa.PrenomEntry.get().strip()
 
         # Réponses attendues
         nomAttendu = self.FrameG.listeEleves[self.FrameG.rang + 1][1].strip()
@@ -245,8 +245,8 @@ class Application(tk.Tk):
             self.FrameG.majClasseOptions()
             self.FrameDrHa.boutVal.config(state=tk.DISABLED)
             self.FrameDrHa.boutEff.config(state=tk.DISABLED)
-            self.FrameDrHa.reponseNomEntry.config(state=tk.DISABLED)
-            self.FrameDrHa.repPrenomEntry.config(state=tk.DISABLED)
+            self.FrameDrHa.nomEntry.config(state=tk.DISABLED)
+            self.FrameDrHa.PrenomEntry.config(state=tk.DISABLED)
 
 
     def AllerALaSuite(self,event) -> None:
@@ -273,8 +273,8 @@ class Application(tk.Tk):
                 if (self.FrameG.listeEleves[self.FrameG.rang][1]=="???") or (self.FrameG.listeEleves[self.FrameG.rang][0]=="???"):
                     self.actDesZonesSaisies() #activer/désactiver zones de saisie
                 else:
-                    self.FrameDrHa.repPrenomEntry.config(state=tk.DISABLED)
-                    self.FrameDrHa.reponseNomEntry.config(state=tk.DISABLED)
+                    self.FrameDrHa.PrenomEntry.config(state=tk.DISABLED)
+                    self.FrameDrHa.nomEntry.config(state=tk.DISABLED)
                     self.FrameDrHa.boutVal.config(state=tk.DISABLED)
                     self.FrameDrHa.boutEff.config(state=tk.DISABLED)
                 # maj des photos
@@ -292,8 +292,8 @@ class Application(tk.Tk):
         resultat = "pas trouvé"
 
         # Lecture et nettoyage
-        nom = self.FrameDrHa.reponseNomEntry.get().strip().lower()
-        prenom = self.FrameDrHa.repPrenomEntry.get().strip().lower()
+        nom = self.FrameDrHa.nomEntry.get().strip().lower()
+        prenom = self.FrameDrHa.PrenomEntry.get().strip().lower()
         mode = self.FrameDrBa.selectPrenNom.get()
 
 
@@ -335,7 +335,7 @@ class Application(tk.Tk):
                 self.rechercher()
         else:
             # Passer au champ Nom
-            self.FrameDrHa.reponseNomEntry.focus_set()
+            self.FrameDrHa.nomEntry.focus_set()
 
                         
     def information(self,event) -> None:
