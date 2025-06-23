@@ -24,11 +24,12 @@ class Application(tk.Tk):
         """Constructeur de la fenêtre principale"""
         super().__init__()   # constructeur de la classe parente
         self.FrameDrBa = FrameDroiteBasse(self)
-        self.FrameDrHa = FrameDoiteHaute(self)
+        self.FrameDrHa = FrameDroiteHaute(self)
         self.FrameG = FrameGauche (self,self.FrameDrBa.listeEleves)
-        self.FrameDrBa.boutVal.bind("<Button-1>",self.configurer)
-        self.FrameDrHa.boutVal.bind("<Button-1>",self.verifierRechercher)
-        self.FrameDrHa.boutEff.bind("<Button-1>",self.effacer)
+        self.FrameDrBa.boutVal.clicked.connect(self.configurer)
+        self.FrameDrHa.boutVal.clicked.connect(self.verifierRechercher)
+        self.FrameDrHa.boutEff        self.FrameDrBa.boutVal.bind("<Button-1>",self.configurer)
+effacer)
         self.FrameDrHa.boutSuite.bind("<Button-1>",self.AllerALaSuite)
         self.FrameDrHa.PrenomEntry.bind('<Return>',self.validerRepNom)
         self.FrameDrHa.nomEntry.bind('<Return>',self.verifierRechercher)

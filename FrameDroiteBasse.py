@@ -6,108 +6,123 @@
 # (apprentissage, test mental, test ecrit, Rechercher)
 # choix de la classe et de l'option
 #####################################################
-
-import tkinter as tk
-from tkinter import ttk
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QRadioButton, QPushButton, QGridLayout, QLabel, QComboBox, QCheckBox
 import copy, sqlite3, os  # fichier Excel de l'établissement
 from ModifierBDD import ModifierBDD
 
-class FrameDroiteBasse (tk.Frame):
+class FrameDroiteBasse (QWidget):
     """ Créer la partie droite basse de l'interface """
-    def __init__(self, fenetre: tk.Widget):
+    def __init__(self, fenetre = None):
         """Constructeur de la frame de droite et de ses éléments"""
         # constructeur de la classe parente
-        tk.Frame.__init__(self, fenetre, relief=tk.GROOVE, bd=3)
-        self.grid(row=1, column=1, padx=10)
+        super().__init__(fenetre)
         self.listeEleves = []  # liste des élèves de la classe sélectionnée
         self.listeOptions = []  # liste des options des élèves de la classeself/
         #self.modifier_bdd = ModifierBDD("fichiers/eleves.bdd") -faux?
         self.modifier_bdd = ModifierBDD("fichiers/eleves.db")
         self.optionSelectionnee = "TOUS"  # optionsélectionnée
-        # boutons radiCreerBDDos des modes
-        frameRadio = tk.Frame(self)
-        frameRadio.grid(row=1, columnspan=2, sticky="w")
-        modes = [("Apprentissage", "1"), ("Test mental", "2"),
-                 ("Test écrit", "3"), ("Rechercher", "4")]
-        self.SelectModes = tk.StringVar()
-        self.SelectModes.set("1")  # initialisation
-        for text, mode in modes:
-            b = tk.Radiobutton(frameRadio, text=text,
-                               variable=self.SelectModes, value=mode,
-                               command=self.configRechercher)
-            b.pack(side="left", pady=3)
+
+        layoutBasDroit = QVBoxLayout()
+        layoutBoutonsRadiosHaut = QHBoxLayout()
+        # boutons radio des modes
+        self.boutonRadioHaut1 = QRadioButton("Apprentissage")
+        layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut1)
+        self.boutonRadioHaut2 = QRadioButton("Test mental")
+        layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut2)
+        self.boutonRadioHaut3 = QRadioButton("Test écrit")
+        layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut3)
+        self.boutonRadioHaut4 = QRadioButton("Rechercher")
+        layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut4)
+         #bouton radi 1 est sélectionné
+        self.boutonRadioHaut1.setChecked(True)
+        layoutBasDroit.addLayout(layoutBoutonsRadiosHaut)
+        
+        # Combobox - QGridLayout
+        layoutGrille = QGridLayout()
+         # labels)
+        layoutGrille.addWidget(QLabel("Classe/Catégorie"), 0,0)
+        layoutGrille.addWidget(QLabel("Option/Spécialité"),0,1)
+        ## ComboBox
+        self.comboBoxGauche = QComboBox()
+        self.comboBoxDroite = QComboBox()
+        layoutGrille.addWidget(self.comboBoxGauche,1,0)
+        layoutGrille.addWidget(self.comboBoxDroite,1,1)
+        layoutBasDroit.addLayout(layoutGrille)
+
         # création de la liste des classes
-        self.classesEtablissement = self.liste_des_classes()
-        self.classesEtablissement.sort()
-        labelCombog = ttk.Label(self, text="Classe/Catégorie")
-        labelCombog.grid(column=0, row=2)
-        self.combog = ttk.Combobox(self, values=self.classesEtablissement)
-        self.combog.grid(row=3, column=0, sticky="w", pady=3, padx=5)
-        self.combog.bind("<<ComboboxSelected>>", self.choisir_classe_options)
+        classesRangees = sorted(self.liste_des_classes())  # crée une nouvelle liste triée
+        self.comboBoxGauche.addItems(classesRangees)
+        self.comboBoxGauche.currentTextChanged.connect(self.choisir_classe_options)
+        
         # checkbutton Aléatoite
-        self.ordreAleatoire = "non"
-        self.aleatoire = tk.StringVar()
-        methode = self.definirOrdreDefilement
-        self.checkbutAleatoire = tk.Checkbutton(self, text=" Aléatoire",
-                                                variable=self.aleatoire,
-                                                onvalue="oui",
-                                                offvalue="non",
-                                                command=methode)
-        self.checkbutAleatoire.grid(row=4, sticky="w")
-        self.checkbutAleatoire.deselect()
+        layoutCheckBox = QHBoxLayout()
+        self.checkBox = QCheckBox("AAleatoire")
+        layoutCheckBox.addWidget(self.checkBox)
+        layoutBasDroit.addLayout(layoutCheckBox)
+        self.checkBox.setEnabled(False) # désactiver le bouron checkBox
+        
         # boutons radios avec/sans nom prénoms
-        frameRadio2 = tk.Frame(self)
-        frameRadio2.grid(row=5, columnspan=2, sticky="w")
-        choix = [("Prénom+Nom", "1"), ("Prénom", "2"), ("Nom", "3")]
-        self.selectPrenNom = tk.StringVar()
-        self.selectPrenNom.set("1")  # initialisation
-        for texte, numero in choix:
-            b = tk.Radiobutton(frameRadio2, text=texte,
-                               variable=self.selectPrenNom,
-                               value=numero,
-                               command=self.configRechercher)
-            b.pack(side="left")
-        # bouton de validation 1
-        self.boutVal = tk.Button(self, text="Valider")
-        self.boutVal.grid(row=6, columnspan=2, pady=5)
+        layoutRadioBoutonsBas = QHBoxLayout()
+        self.boutonRadioBas1 = QRadioButton("Prenom+Nom")
+        layoutRadioBoutonsBas.addWidget(self.boutonRadioBas1)
+        self.boutonRadioBas2 = QRadioButton("Prenom")
+        layoutRadioBoutonsBas.addWidget(self.boutonRadioBas2)
+        self.boutonRadioBas3 = QRadioButton("Nom")
+        layoutRadioBoutonsBas.addWidget(self.boutonRadioBas3)
+         #bouton radi 1 est sélectionné
+        self.boutonRadioBas1.setChecked(True)
+        layoutBasDroit.addLayout(layoutRadioBoutonsBas)
+        
+    # Bouton pour valider le choix
+        layoutBouton = QHBoxLayout()
+        self.boutonVal = QPushButton("Valider")
+        self.boutonVal.clicked.connect(self.configRechercher)
+        layoutBouton.addWidget(self.boutonVal)
+        layoutBasDroit.addLayout(layoutBouton)
         # créer la liste des options
         self.creerComboOptions()
-        
 
+    # ancrer le layout principal à la fenêtre
+        self.setLayout(layoutBasDroit)
+
+        self.show()
+        
     def liste_des_classes(self) -> list:
         """Renvoie la liste des classes de l'établissement"""
         classes = self.modifier_bdd.lister_classes()
         return classes
 
-
     def configRechercher(self) -> None:
         """activer/désactiver les listes les comboBox, des radiobuttons
            et des labels"""
-        if (self.SelectModes.get() == "4"):
+        if self.boutonRadioHaut4.isChecked():
             # désactiver les radiobuttons
-            self.checkbutAleatoire.configure(state="disabled")
+            self.boutonRadioHaut1.setEnabled(False)
+            self.boutonRadioHaut2.setEnabled(False)
+            self.boutonRadioHaut3.setEnabled(False)
+            self.boutonRadioHaut4.setEnabled(False)
             # désactiver les listes des comboBox
-            self.combog.configure(state="disabled")
-            self.combod.configure(state="disabled")
+            self.comboBoxGauche.setEnabled(False)
+            self.comboBoxDroite.setEnabled(False)
         else:
             # activer les listes des comboBox
-            self.combog.configure(state="normal")
-            self.combod.configure(state="normal")
+            self.comboBoxGauche.setEnabled(True)
+            self.comboBoxDroite.setEnabled(True)
             # activer les radiobuttons
-            self.checkbutAleatoire.configure(state="normal")
+            self.boutonRadioHaut1.setEnabled(True)
+            self.boutonRadioHaut2.setEnabled(True)
+            self.boutonRadioHaut3.setEnabled(True)
+            self.boutonRadioHaut4.setEnabled(True)
 
     def definirOrdreDefilement(self) -> None :
         """Définir l'ordre de défilement"""
-        self.ordreAleatoire = self.aleatoire.get()
+        self.ordreAleatoire = self.checkBox.isChecked() 
 
     def choisir_classe_options(self, event) -> None :
         """Choisir la classe et mettre à jour les élèves et les options"""
-        classeSelectionnee = self.combog.get()
-        
+        classeSelectionnee = self.comboBoxGauche.currentText()
         # Récupère la liste des élèves de la classe
-        #ancienne version
-        # self.listeEleves =  self.modifier_bdd.eleves_classe(classeSelectionnee) # voir init pour l'instanciation
-        # nouvelle vesion (2lignes)
+        # recupérer la liste des élèves
         self.modifier_bdd.eleves_classe(classeSelectionnee)  # exécute la méthode (pas de retour)
         self.listeEleves = self.modifier_bdd.listeEleves
         # Récupère uniquement les options réellement présentes dans cette classe
@@ -129,26 +144,25 @@ class FrameDroiteBasse (tk.Frame):
         self.creerComboOptions()
         return listeOptions
 
-
     def creerComboOptions(self) -> None:
         """créer la liste des options"""
-        labelCombod = ttk.Label(self, text="Option/Spécialité")
-        labelCombod.grid(column=1, row=2)
-        self.combod = ttk.Combobox(self,
-                                   values=self.listeOptions)
-        self.combod.grid(row=3, column=1, sticky="W", pady=3, padx=5)
-        self.combod.bind("<<ComboboxSelected>>",
-                         self.choisirOption)
-        self.configRechercher()
+        self.comboBoxDroite.blockSignals(True)  # éviter appel involontaire à choisirOption
+        self.comboBoxDroite.clear()  # vider l'ancienne liste
+        self.comboBoxDroite.addItems(self.listeOptions)
+        self.comboBoxDroite.blockSignals(False)
+        self.comboBoxDroite.currentTextChanged.connect(self.choisirOption)
+
 
     def choisirOption(self, event) -> None:
         """Sélectionner l'option des élèves"""
-        self.optionSelectionnee = self.combod.get()
+        self.optionSelectionnee = self.comboBoxDroite.currentText()
 
 # ----------------------------------------------------
 
 if __name__ == '__main__':
-    fenetre = tk.Tk()
-    Application = FrameDroiteBasse(fenetre)
-    fenetre.mainloop()
-    # fin du programme
+    from PyQt5.QtWidgets import QApplication
+    import sys
+    app = QApplication(sys.argv)
+    fenetre = FrameDroiteBasse()
+    fenetre.show()
+    app.exec()
