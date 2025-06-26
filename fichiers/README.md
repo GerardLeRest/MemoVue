@@ -27,27 +27,20 @@ MémoLycée permet aussi de filtrer les élèves par classe et par option, et d�
    
    ```bash
    python3 -m venv mon_env
-   source venv/bin/activate  # sous Windows : venv\Scripts\activate
-   ```
-
-3. **Installer les dépendances** :
-   
-   ```bash
-   pip install -r requirements.txt
+   source mon_env/bin/activate  # sous Windows : venv\Scripts\activate
    ```
 
 ## 📦 Dépendances
 
 Le programme nécessite les bibliothèques suivantes :
 
-- `Pillow` (pour l'affichage des images)
-- `sqlite3` (intégré à Python pour la gestion de la base de données)
-- 'PyQt5' (bibliothèque graphique)
+- `sqlite3` (intégré à Python pour la gestion de la base de données - ne pas installer)
+- 'PySide6' (bibliothèque graphique)
 
-Tu peux aussi les installer manuellement si besoin :
+Vous pouvez aussi l' installer manuellement si besoin :
 
 ```bash
-pip install Pillow
+pip install pyside6
 ```
 
 ## 📂 Données utilisées

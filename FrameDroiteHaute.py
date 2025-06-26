@@ -7,8 +7,8 @@
 #####################################################
 
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton, QApplication
-from PyQt5.QtGui import QPixmap
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton, QApplication
+from PySide6.QtGui import QPixmap
 import os, sys
 
 repertoire_racine=os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw

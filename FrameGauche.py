@@ -8,9 +8,9 @@
 
 
 import os
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QGridLayout, QLabel, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy
-from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtCore import QSize, Qt
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QGridLayout, QLabel, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy
+from PySide6.QtGui import QPixmap, QIcon
+from PySide6.QtCore import QSize, Qt
 from ModifierBDD import  ModifierBDD
 
 repertoire_racine=os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
@@ -179,7 +179,7 @@ class FrameGauche (QWidget):
                 
 # ----------------------------------------------------
         
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 if __name__ == '__main__':
     import sys

@@ -11,8 +11,8 @@ from FrameGauche import *
 from FrameDroiteHaute import *
 from FrameDroiteBasse import *
 
-from PyQt5.QtWidgets import QMessageBox, QWidget, QApplication, QLabel
-from PyQt5.QtGui import QPixmap
+from PySide6.QtWidgets import QMessageBox, QWidget, QApplication
+from PySide6.QtGui import QPixmap
 
 repertoire_racine = os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
 
@@ -265,7 +265,7 @@ class Fenetre(QWidget):
         mode = self.FrameDrBa.groupeBas.checkedButton().text()
 
 
-        for liste_eleves in self.FrameDrBa.modifier_bdd.ElevesParClasses.items():
+        for _, liste_eleves in self.FrameDrBa.modifier_bdd.ElevesParClasses.items():
             for eleve in liste_eleves:
                 prenomEleve = eleve[0].lower()
                 nomEleve = eleve[1].lower()

@@ -6,9 +6,9 @@
 # (apprentissage, test mental, test ecrit, Rechercher)
 # choix de la classe et de l'option
 #####################################################
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QRadioButton, QPushButton, QGridLayout, QLabel, QComboBox, QCheckBox, QButtonGroup
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QRadioButton, QPushButton, QGridLayout, QLabel, QComboBox, QCheckBox, QButtonGroup
 from ModifierBDD import ModifierBDD
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 import sys
 
 class FrameDroiteBasse (QWidget):
