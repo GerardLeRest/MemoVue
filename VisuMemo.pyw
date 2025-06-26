@@ -6,42 +6,46 @@
 # du lycée
 ##################################################
 
-import tkinter as tk
-from tkinter import ttk
-from PIL import Image, ImageTk
-
-import tkinter.filedialog, os, random, tkinter.messagebox, sys, locale, webbrowser, copy
+import os, random, copy, sys
 from FrameGauche import *
 from FrameDroiteHaute import *
 from FrameDroiteBasse import *
 
+from PyQt5.QtWidgets import QMessageBox, QWidget, QApplication, QLabel
+from PyQt5.QtGui import QPixmap
+
 repertoire_racine = os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
 
-class Application(tk.Tk):
+class Fenetre(QWidget):
     """ Créer l'interface graphique et lier les diffentes classes entre elles"""
     
-    def __init__(self, frameDroiteBasse = None) :
+    def __init__(self) :
         """Constructeur de la fenêtre principale"""
         super().__init__()   # constructeur de la classe parente
         self.FrameDrBa = FrameDroiteBasse(self)
         self.FrameDrHa = FrameDroiteHaute(self)
         self.FrameG = FrameGauche (self,self.FrameDrBa.listeEleves)
-        self.FrameDrBa.boutVal.clicked.connect(self.configurer)
+        layoutPrincipal = QGridLayout()
+        # position 0, 0, prends 2 lignes de haut, 1 colonne de largeur
+        layoutPrincipal.addWidget(self.FrameG, 0, 0, 2, 1 )   
+        layoutPrincipal.addWidget(self.FrameDrHa, 0, 1)
+        layoutPrincipal.addWidget(self.FrameDrBa, 1, 1)
+        self.setLayout(layoutPrincipal)
+
+        self.FrameDrBa.boutonVal.clicked.connect(self.configurer)
         self.FrameDrHa.boutVal.clicked.connect(self.verifierRechercher)
-        self.FrameDrHa.boutEff        self.FrameDrBa.boutVal.bind("<Button-1>",self.configurer)
-effacer)
-        self.FrameDrHa.boutSuite.bind("<Button-1>",self.AllerALaSuite)
-        self.FrameDrHa.PrenomEntry.bind('<Return>',self.validerRepNom)
-        self.FrameDrHa.nomEntry.bind('<Return>',self.verifierRechercher)
-        # bouton info
-        self.boutonInfo = tk.Button(self, text="Info")
-        self.boutonInfo.grid(row=2,column=1,pady=2)
-        self.boutonInfo.bind("<Button-1>",self.information)
+        self.FrameDrHa.boutEff.clicked.connect(self.effacer)
+        self.FrameDrHa.boutSuite.clicked.connect(self.AllerALaSuite)
+        self.FrameDrHa.prenomEntry.returnPressed.connect(self.validerRepNom)
+        self.FrameDrHa.nomEntry.returnPressed.connect(self.verifierRechercher)
+        
+
+        self.show()
        
     def configurer(self,event) -> None:
         """ configurer l'application"""
         self.FrameDrHa.effacerReponses()
-        if (self.FrameDrBa.SelectModes.get()=="4"): # mode "Rechercher"
+        if self.FrameDrBa.boutonRadioHaut4.isChecked(): # mode "Rechercher"
             self.FrameDrHa.configRechercher()
             # activer/désactiver zones de saisie 
             self.actDesZonesSaisies()            
@@ -51,88 +55,59 @@ effacer)
     def actDesZonesSaisies(self) -> None:
         """Activer ou désactiver les zones de saisie selon le mode"""
 
-        if self.FrameDrBa.selectPrenNom.get() == "2":  # prénom seul
-            self.FrameDrHa.nomEntry.config(state=tk.DISABLED)
-            self.FrameDrHa.PrenomEntry.config(state=tk.NORMAL)
-            self.FrameDrHa.PrenomEntry.focus_set()
+        if self.FrameDrBa.boutonRadioBas2.isChecked():  # prénom seul
+            self.FrameDrHa.nomEntry.setEnabled(False)
+            self.FrameDrHa.prenomEntry.setEnabled(True)
+            self.FrameDrHa.prenomEntry.setFocus()
 
-        elif self.FrameDrBa.selectPrenNom.get() == "3":  # nom seul
-            self.FrameDrHa.PrenomEntry.config(state=tk.DISABLED)
-            self.FrameDrHa.nomEntry.config(state=tk.NORMAL)
-            self.FrameDrHa.nomEntry.focus_set()
+        elif self.FrameDrBa.boutonRadioBas3.isChecked():  # nom seul
+            self.FrameDrHa.prenomEntry.setEnabled(False)
+            self.FrameDrHa.nomEntry.setEnabled(True)
+            self.FrameDrHa.nomEntry.setFocus()
 
         else:  # nom + prénom
-            self.FrameDrHa.PrenomEntry.config(state=tk.NORMAL)
-            self.FrameDrHa.nomEntry.config(state=tk.NORMAL)
-            self.FrameDrHa.PrenomEntry.focus_set()
+            self.FrameDrHa.prenomEntry.setEnabled(True)
+            self.FrameDrHa.nomEntry.setEnabled(True)
+            self.FrameDrHa.prenomEntry.setFocus()
             
-    def DonnerNomPrenom(self) -> None:
-        """Donner le nom/prénom si la photo est absente"""
-        # valeur du dernier rang dans les fichiers de configuration csv
-        dernier_rang=len(self.FrameG.listeEleves[self.FrameG.rang])-1 # rang: rang de l'élève dans la classe
-        # activer/désactiver zone de saisie
-        if self.FrameDrBa.selectPrenNom.get()=="2": # prénom seul
-            # donner le prénom si il n'y a pa de photo
-            if self.FrameG.listeEleves[self.FrameG.rang][dernier_rang]=="pas_de_photo":
-                self.FrameDrHa.repPrenom.set(self.FrameG.listeEleves[self.FrameG.rang+1][1])
-        elif self.FrameDrBa.selectPrenNom.get()=="3": # nom seul
-            # donner le nom si il n'y a pa de photo
-            if self.FrameG.listeEleves[self.FrameG.rang][dernier_rang]=="pas_de_photo":
-                self.FrameDrHa.repNom.set(self.FrameG.listeEleves[self.FrameG.rang+1][0])
-        else: # nom et prénom
-            # donner le prénom si il n'y a pa de photo
-            if self.FrameG.listeEleves[self.FrameG.rang][dernier_rang]=="pas_de_photo":
-                self.FrameDrHa.repPrenom.set(self.FrameG.listeEleves[self.FrameG.rang+1][1])
-                self.FrameDrHa.repNom.set(self.FrameG.listeEleves[self.FrameG.rang+1][0])
-                
     def configAutresModes(self) -> None:
-        """configurations modes Apprentissage - Test Mental - Test écrit"""
-        # try:
-        # liste des élèves
-        #self.FrameDrBa.listeEleves=copy.deepcopy(self.FrameDrBa.choisir_classe()) # appel de la méthode choisirClasse
-        self.FrameG.listeEleves=copy.deepcopy(self.FrameDrBa.listeEleves) # copie profonde de la liste        
-        if self.FrameDrBa.optionSelectionnee!="TOUS":
+        self.FrameDrBa.choisirOption()  # ⚠️ force la mise à jour
+        self.FrameG.listeEleves = copy.deepcopy(self.FrameDrBa.listeEleves)
+
+        # Filtrage par option choisie
+        if self.FrameDrBa.optionSelectionnee != "TOUS":
             self.enleverEleves()
-        self.FrameG.nbreElev=len(self.FrameG.listeEleves) # nbre élèves
-        self.FrameG.rang=0  
-        # N° de l'élève en cours (frame gauche)
-        self.FrameG.numOrdreElev.set(str(self.FrameG.rang//2+1)+"/"+str(self.FrameG.nbreElev))
-        #désactiver l'affichage des bonnes réponses
+        
+        self.FrameG.nbreElev = len(self.FrameG.listeEleves)
+        self.FrameG.rang = 0
+        self.FrameG.numOrdreElev.setText(f"{self.FrameG.rang // 2 + 1}/{self.FrameG.nbreElev}")
         self.FrameDrHa.DesAffichRep()
-        # changer l'ordre des élèves
-        if (self.FrameDrBa.ordreAleatoire=="oui"):
-            random.shuffle(self.FrameG.listeEleves) 
-        # effacer noms dans la liste  
-        if (self.FrameDrBa.selectPrenNom.get()=="2"): # Prénom seul
-            self.effacerNomsOuPrenoms(self.FrameG.listeEleves,1)
-        # effacer prénoms dans la liste   
-        if (self.FrameDrBa.selectPrenNom.get()=="3"): # nom seul
-            self.effacerNomsOuPrenoms(self.FrameG.listeEleves,0)
-            # ajouter les ???
-        if (self.FrameDrBa.SelectModes.get()>"1"): 
-            self.ajouterBlancsListes(self.FrameG.listeEleves)  
-        # configuration des boutons champs, etc
-        if (self.FrameDrBa.SelectModes.get()=="3"): # Test écrit
+        if self.FrameDrBa.checkBox.isChecked():
+            random.shuffle(self.FrameG.listeEleves)
+        if self.FrameDrBa.boutonRadioBas2.isChecked():  # Prénom seul
+            self.effacerNomsOuPrenoms(self.FrameG.listeEleves, 1)
+        if self.FrameDrBa.boutonRadioBas3.isChecked():  # Nom seul
+            self.effacerNomsOuPrenoms(self.FrameG.listeEleves, 0)
+        if self.FrameDrBa.boutonRadioHaut2.isChecked():  # Test oral
+            self.ajouterBlancsListes(self.FrameG.listeEleves)
+        if self.FrameDrBa.boutonRadioHaut3.isChecked():  # Test écrit
+            self.ajouterBlancsListes(self.FrameG.listeEleves)
             self.FrameDrHa.configTestEcrit()
             self.configTestEcrit()
-        else: # apprentissage et test oral
+        else:
             self.configApprentissageTestOral()
-        self.FrameG.majNomPrenom()
-        self.FrameG.majClasseOptions()
-        self.FrameG.majPhoto()
-        # except IOError:
-        #     tkinter.messagebox.showwarning("Attention","Sélectionner une classe")
-        # except OSError:
-        #     tkinter.messagebox.showwarning("Attention","Sélectionner une classe")
-        # except AttributeError:
-        #     tkinter.messagebox.showwarning("Attention","Sélectionner une classe")
+        print(f"==> rang = {self.FrameG.rang}, taille = {len(self.FrameG.listeEleves)}")
+        if self.FrameG.listeEleves and all(len(eleve) >= 4 for eleve in self.FrameG.listeEleves):
+            self.FrameG.maj()
+        else:
+            print("❌ Données incomplètes ou non chargées, affichage annulé.")
+
 
     def configTestEcrit(self) -> None:
         """Configurer le mode Test Écrit"""
         # Désactiver les boutons (Frame gauche)
         for bouton in self.FrameG.boutons:
-            bouton.configure(state="disabled")
-        
+            bouton.setEnabled(False)
         # Activer ou désactiver les zones de saisie en fonction du mode
         self.actDesZonesSaisies()
 
@@ -148,32 +123,26 @@ effacer)
         # activer les boutons frame gauche si la liste des élèves n'est pas vide
         if len(self.FrameG.listeEleves)>1:
             for i in range(len(icones)):
-                self.FrameG.boutons[i].configure(state="active") 
+                self.FrameG.boutons[i].setEnabled(True) 
         else:
             for i in range(len(icones)):
-                self.FrameG.boutons[i].configure(state="disabled") 
+                self.FrameG.boutons[i].setEnabled(False)
         
-    def effacer(self,event) -> None:
+    def effacer(self) -> None:
         """Effacer après appui sur le bouton "effacer" de la frame haute droite"""
-        expression=self.FrameG.rang % 2 == 0 and self.FrameDrBa.SelectModes.get()=="3" # rang paire et test écrit
-        if (expression or self.FrameDrBa.SelectModes.get()=="4" ): #  mode "Rechercher"
+        expression=self.FrameG.rang % 2 == 0 and self.FrameDrBa.boutonRadioHaut3.isChecked() # rang paire et test écrit
+        if expression or self.FrameDrBa.boutonRadioHaut4: #  mode "Rechercher"
             self.FrameDrHa.effacerReponses()
             self.actDesZonesSaisies()
+
     def enleverEleves(self) -> None:
         """enlever les élèves ne faisant pas l'option sélectionnée"""
-        # i=0
-        # while i< len(self.FrameG.listeEleves):
-        #     if self.FrameDrBa.optionSelectionnee in self.FrameG.listeEleves[i]:    
-        #         i=i+1
-        #     else:
-        #         self.FrameG.listeEleves.remove( self.FrameG.listeEleves[i])
-        """Enlever les élèves ne faisant pas l'option sélectionnée"""
         self.FrameG.listeEleves = [
             eleve for eleve in self.FrameG.listeEleves
-            if self.FrameDrBa.optionSelectionnee in eleve[2]
+            if self.FrameDrBa.optionSelectionnee in eleve[3]
         ]
     
-    def effacerNomsOuPrenoms(self,liste:list,rang: int) -> None:
+    def effacerNomsOuPrenoms(self,liste ,rang: int):
         """effacer les noms ou les prénoms"""
         for i in range(len(liste)):
                 liste[i][rang]=" "
@@ -183,23 +152,23 @@ effacer)
         i=0        
         while i<(len(liste)):
             tab=list(liste[i])# copie de liste[i]
-            if (self.FrameDrBa.selectPrenNom.get()=="1"): #nom et prénom
+            if self.FrameDrBa.boutonRadioBas1.isChecked(): #nom et prénom
                 tab[0]="???"
                 tab[1]="???"
-            elif (self.FrameDrBa.selectPrenNom.get()=="2"): # prénom seul
-                tab[0]=" "
-                tab[1]="???"
+            elif self.FrameDrBa.boutonRadioBas2.isChecked(): # prénom seul
+                tab[0]="???"
+                tab[1]=""
             else:               # nom seul
-                tab[0]="???"
-                tab[1]=" "
+                tab[0]=""
+                tab[1]="???"
             liste.insert(i,tab)
             i=i+2
             
-    def verifierRechercher(self,event) -> None:
+    def verifierRechercher(self) -> None:
         """lancer la vérification de la réponse"""
-        if self.FrameDrBa.SelectModes.get()=="3": # mode "Test écrit"
+        if self.FrameDrBa.boutonRadioHaut3.isChecked(): # mode - Test écrit
             self.verifier()
-        elif self.FrameDrBa.SelectModes.get()=="4": # mode "Rechercher"
+        elif self.FrameDrBa.boutonRadioHaut4.isChecked(): # mode "Rechercher"
             self.rechercher()
         
     def verifier(self) -> None:
@@ -209,33 +178,32 @@ effacer)
             return  # ne rien faire si ce n’est pas un rang pair
 
         # Récupération des réponses utilisateur
-        nom = self.FrameDrHa.nomEntry.get().strip()
-        prenom = self.FrameDrHa.PrenomEntry.get().strip()
+        nom = self.FrameDrHa.nomEntry.text()
+        prenom = self.FrameDrHa.prenomEntry.text()
 
         # Réponses attendues
-        nomAttendu = self.FrameG.listeEleves[self.FrameG.rang + 1][1].strip()
-        prenomAttendu = self.FrameG.listeEleves[self.FrameG.rang + 1][0].strip()
+        nomAttendu = self.FrameG.listeEleves[self.FrameG.rang + 1][1]
+        prenomAttendu = self.FrameG.listeEleves[self.FrameG.rang + 1][0]
 
-        mode = self.FrameDrBa.selectPrenNom.get()
+        mode = self.FrameDrBa.groupeBas.checkedButton().text() 
         match = True
 
-        if mode in ["1", "3"]:  # le nom doit être vérifié
+        if mode in ["Prenom+Nom", "Nom"]:  # le nom doit être vérifié
             match &= nom.lower() == nomAttendu.lower()
-        if mode in ["1", "2"]:  # le prénom doit être vérifié
+        if mode in ["Prenom+Nom", "Prenom"]:  # le prénom doit être vérifié
             match &= prenom.lower() == prenomAttendu.lower()
 
-        # Affichage des résultats
+        # Affichage des icones
         icone = "check.png" if match else "cross.png"
-        image = Image.open(os.path.join(repertoire_racine, "fichiers", "icones", icone))
-        self.photo = ImageTk.PhotoImage(image)
-        self.FrameDrHa.canvas.itemconfig(self.FrameDrHa.photoSurCanvas, image=self.photo)
-
+        image = QPixmap(os.path.join(repertoire_racine, "fichiers", "icones", icone))
+        self.FrameDrHa.labelImageGauche.setPixmap(image)
+   
         if match:
             self.FrameDrHa.nbreRepExactes += 1
 
         # Mise à jour du score I / J
         score = f"{self.FrameDrHa.nbreRepExactes}/{self.FrameG.rang // 2 + 1}"
-        self.FrameDrHa.nbreRep.set(score)
+        self.FrameDrHa.nbreRep.setText(score)
 
         # Avancer dans la liste
         self.FrameG.rang += 1
@@ -244,15 +212,14 @@ effacer)
         else:
             self.FrameG.majNomPrenom()
             self.FrameG.majClasseOptions()
-            self.FrameDrHa.boutVal.config(state=tk.DISABLED)
-            self.FrameDrHa.boutEff.config(state=tk.DISABLED)
-            self.FrameDrHa.nomEntry.config(state=tk.DISABLED)
-            self.FrameDrHa.PrenomEntry.config(state=tk.DISABLED)
-
+            self.FrameDrHa.boutVal.setEnabled(False)
+            self.FrameDrHa.boutEff.setEnabled(False)
+            self.FrameDrHa.nomEntry.setEnabled(False)
+            self.FrameDrHa.prenomEntry.setEnabled(False)
 
     def AllerALaSuite(self,event) -> None:
         """voir la réponse et passer à l'élève suivant"""
-        if (self.FrameDrBa.SelectModes.get()=="3"): #Test écrit
+        if self.FrameDrBa.boutonRadioHaut3.isChecked(): #Test écrit
             self.FrameDrHa.effacerReponses()
             if (self.FrameG.rang >= len(self.FrameG.listeEleves)-1):
                 pass
@@ -261,12 +228,12 @@ effacer)
             # avancer
             if (self.FrameG.rang<len(self.FrameG.listeEleves)):
                 #réactivation des boutons
-                self.FrameDrHa.boutVal.config(state=tk.NORMAL)
-                self.FrameDrHa.boutEff.config(state=tk.NORMAL)
+                self.FrameDrHa.boutVal.setEnabled(True)
+                self.FrameDrHa.boutEff.setEnabled(True)
                 # maj bonnes réponses
-                self.FrameDrHa.nbreRep.set(str(self.FrameDrHa.nbreRepExactes)+"/"+str(self.FrameG.rang//2+1))
+                self.FrameDrHa.nbreRep.setText(str(self.FrameDrHa.nbreRepExactes)+"/"+str(self.FrameG.rang//2+1))
                 # N° de l'élève en cours
-                self.FrameG.numOrdreElev.set(str(self.FrameG.rang//2+1)+"/"+str(self.FrameG.nbreElev))
+                self.FrameG.numOrdreElev.setText(str(self.FrameG.rang//2+1)+"/"+str(self.FrameG.nbreElev))
                 # maj des noms te des prénoms
                 self.FrameG.majNomPrenom()
                 self.FrameG.majClasseOptions()
@@ -274,10 +241,10 @@ effacer)
                 if (self.FrameG.listeEleves[self.FrameG.rang][1]=="???") or (self.FrameG.listeEleves[self.FrameG.rang][0]=="???"):
                     self.actDesZonesSaisies() #activer/désactiver zones de saisie
                 else:
-                    self.FrameDrHa.PrenomEntry.config(state=tk.DISABLED)
-                    self.FrameDrHa.nomEntry.config(state=tk.DISABLED)
-                    self.FrameDrHa.boutVal.config(state=tk.DISABLED)
-                    self.FrameDrHa.boutEff.config(state=tk.DISABLED)
+                    self.FrameDrHa.prenomEntry.setEnabled(False)
+                    self.FrameDrHa.nomEntry.setEnabled(False)
+                    self.FrameDrHa.boutVal.setEnabled(False)
+                    self.FrameDrHa.boutEff.setEnabled(False)
                 # maj des photos
                 self.FrameG.majPhoto()
                 if (self.FrameG.rang==len(self.FrameG.listeEleves)-1):
@@ -292,20 +259,20 @@ effacer)
         self.FrameG.rang = 0
         resultat = "pas trouvé"
 
-        # Lecture et nettoyage
-        nom = self.FrameDrHa.nomEntry.get().strip().lower()
-        prenom = self.FrameDrHa.PrenomEntry.get().strip().lower()
-        mode = self.FrameDrBa.selectPrenNom.get()
+        # Lecture et mise en minuscules
+        nom = self.FrameDrHa.nomEntry.text().lower()
+        prenom = self.FrameDrHa.prenomEntry.text().lower()
+        mode = self.FrameDrBa.groupeBas.checkedButton().text()
 
 
-        for classe, liste_eleves in self.FrameDrBa.modifier_bdd.ElevesParClasses.items():
+        for liste_eleves in self.FrameDrBa.modifier_bdd.ElevesParClasses.items():
             for eleve in liste_eleves:
-                prenomEleve = eleve[0].strip().lower()
-                nomEleve = eleve[1].strip().lower()
+                prenomEleve = eleve[0].lower()
+                nomEleve = eleve[1].lower()
 
-                if mode == "2":  # prénom seul
+                if mode == "Prenom":  # prénom seul
                     condition = (prenom == prenomEleve)
-                elif mode == "3":  # nom seul
+                elif mode == "Nom":  # nom seul
                     condition = (nom == nomEleve)
                 else:  # nom + prénom
                     condition = (prenom == prenomEleve and nom == nomEleve)
@@ -314,32 +281,32 @@ effacer)
                     self.FrameG.listeEleves.append(eleve)
                     self.FrameG.nbreElev = len(self.FrameG.listeEleves)
                     self.FrameG.rang = 0
-                    self.FrameG.numOrdreElev.set(f"1/{self.FrameG.nbreElev}")
+                    self.FrameG.numOrdreElev.setText(f"1/{self.FrameG.nbreElev}")
                     self.FrameG.majNomPrenom()
                     self.FrameG.majClasseOptions()
                     self.FrameG.majPhoto()
-                    resultat = "trouvé"
+                    
 
-    def validerRepNom(self, event):
+    def validerRepNom(self):
         """Valider l'entrée prénom selon le mode sélectionné, ou passer au champ nom"""
 
-        mode_recherche = self.FrameDrBa.selectPrenNom.get()
-        mode_general = self.FrameDrBa.SelectModes.get()
+        modeRecherche = self.FrameDrBa.groupeBas.checkedButton().text()
+        modeGeneral = self.FrameDrBa.groupeHaut.checkedButton().text()
 
-        if mode_recherche == "2":  # Prénom seul
-            if mode_general == "3":  # Test écrit
+        if modeRecherche == "Prenom":  # Prénom seul
+            if modeGeneral == "Test ecrit":  # Test écrit
                 self.verifier()
             else:
                 # Activer les boutons dans FrameG
                 for bouton in self.FrameG.boutons:
-                    bouton.configure(state="normal")
+                    bouton.setEnabled(True)
                 self.rechercher()
         else:
             # Passer au champ Nom
-            self.FrameDrHa.nomEntry.focus_set()
+            self.focusNextChild()
 
                         
-    def information(self,event) -> None:
+    def information(self) -> None:
         """ Informer sur le programme """
         self.fenPropos = tk.Toplevel()
         #bloque la fenêtre parente pour éviter de créer une deuxième fenêtre information        
@@ -357,30 +324,15 @@ effacer)
         partie1=" Mémo_Lycée * v0.52 \n\n Copyrigth (c) - G LE REST - "
         partie2="\n <gerard.lerest@orange.fr>"
         partie3="\n 2016 - 2025 \n\n"
-        partie4=" Cliquer sur l'image pour plus d'infos"
-        message=partie1+partie2+partie3+partie4
-        tk.Message(frame1, width=275, aspect=50, justify="center", pady=2,
-        text = message).pack()
-        # image gplv3.png
-        image = Image.open(repertoire_racine+os.sep+"fichiers"+os.sep+"icones"+os.sep+"gplv3.png")  
-        self.photo = ImageTk.PhotoImage(image)  
-        boutGPLv3=tk.Button(frame1, image=self.photo, command=self.pageWebGPLv3)
-        boutGPLv3.pack(pady=2)  
-        # bouton
-        boutonInfo = tk.Button(frame1, text="Quitter", 
-                                    command=self.fenPropos.destroy)
-        boutonInfo.pack(pady=2)
-        #blocage du dimensionnement de la fenêtre
-        self.fenPropos.resizable(width=False, height=False)
+        message=partie1+partie2+partie3
+        QMessageBox.information(self, "Licence GPLv3", message)
     
-    def pageWebGPLv3(self):
-        """ accéder à la page web de la licence GPLv3 """
-        webbrowser.open('https://www.gnu.org/licenses/gpl-3.0.fr.html')
-        
+           
 # ----------------------------------------------------
         
 if __name__ == '__main__':
-    App=Application()
-    App.resizable(width=False,height=False)
-    App.title('VisuMemo')
-    App.mainloop()
+    
+    app = QApplication(sys.argv)
+    fenetre = Fenetre()
+    fenetre.show()
+    app.exec()

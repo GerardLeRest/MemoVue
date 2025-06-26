@@ -37,19 +37,39 @@ class FrameDroiteHaute(QWidget):
         self.nomEntry.setPlaceholderText("Nom")
         layoutGrille.addWidget(self.nomEntry,1, 1)
         layoutDroitHaut.addLayout(layoutGrille)
-
+        layoutDroitHaut.addSpacing(5)
         # Zone boutons - QHBoxLayout
+        bouton_style = """
+        QPushButton {
+            background-color: #e0e0e0;
+            border: 1px solid #888;
+            border-radius: 6px;            /* ← coins arrondis */
+            padding: 6px 14px;             /* ← espace intérieur (haut/bas, gauche/droite) */
+        }
+        QPushButton:hover {
+            background-color: #d0d0d0;
+        }
+        QPushButton:pressed {
+            background-color: #c0c0c0;
+        }
+        """
         layoutBoutons = QHBoxLayout()
         # bouton valider
         self.boutVal = QPushButton ("Valider", self)
+        self.boutVal.setStyleSheet(bouton_style)
         layoutBoutons.addWidget(self.boutVal)
         # bouton effacer
         self.boutEff = QPushButton ("Effacer", self)
+        self.boutEff.setStyleSheet(bouton_style)
         layoutBoutons.addWidget(self.boutEff)
         # bouton Suite
         self.boutSuite = QPushButton ("Suite", self)
+        self.boutSuite.setStyleSheet(bouton_style)
+        self.boutSuite.setStyleSheet(bouton_style)
         layoutBoutons.addWidget(self.boutSuite)
+        # ajouter boutonsWidget à layoutHautDroit    
         layoutDroitHaut.addLayout(layoutBoutons)
+
         # désativer les boutons
         self.boutVal.setEnabled(False)
         self.boutEff.setEnabled(False)
@@ -57,19 +77,23 @@ class FrameDroiteHaute(QWidget):
 
         # partie du bas - 2 images
         layoutImages = QHBoxLayout()
-        # image de validation
+        # image de validation chexk ou cross)
         self.labelImageGauche = QLabel()
         self.image = QPixmap(repertoire_racine+os.sep+"fichiers"+os.sep+"icones"+os.sep+"transparent.png")
         self.labelImageGauche.setPixmap(self.image) 
         layoutImages.addWidget(self.labelImageGauche)
+        # espace entre l'image et le compteur de bonnes réponses
+        layoutImages.addStretch()  # ← ajoute un espace flexible
         # affichage des bonnes réponses
         self.nbreRep=QLabel("0/0") 
-        self.nbreRep.setStyleSheet("color: grey;")
+        self.nbreRep.setStyleSheet("color: grey;font-size: 30px;")
         self.nbreRepExactes=0 
+        layoutImages.addWidget(self.nbreRep)
         layoutDroitHaut.addLayout(layoutImages)
 
+        layoutDroitHaut.addSpacing(10)
+        
         self.setLayout(layoutDroitHaut)
-
         self.show()
         
                 
@@ -78,17 +102,17 @@ class FrameDroiteHaute(QWidget):
         # changer couleur label
         self.labelPrenom.setStyleSheet("color: black;")
         self.labelNom.setStyleSheet("color: black;")
-        self.nbreRep.setStyleSheet("color: grey;")
+        #self.nbreRep.setStyleSheet("color: black;font-size: 30px")
         # Désactiver l'affichage des bonnes réponses
         self.DesAffichRep()
         # activer/désactiver boutons 
-        self.boutVal.setUpdatesEnabled(True)
+        self.boutVal.setEnabled(True)
         self.boutEff.setEnabled(True)
         self.boutSuite.setEnabled(False)
     
     def DesAffichRep(self) -> None:
         """ désactiver l'affichage des bonnes réponses"""
-        self.nbreRep.setStyleSheet("color: grey;") #nbre bonnes reponses en gris
+        self.nbreRep.setStyleSheet("color: black;font-size: 30px") #nbre bonnes reponses en gris
         self.nbreRepExactes=0  # nbre de réponses exactes
         # maj nbrebonnes réponses
         self.nbreRep.setText(str(self.nbreRepExactes)+os.sep+"0")    
@@ -100,6 +124,7 @@ class FrameDroiteHaute(QWidget):
         self.boutVal.setEnabled(False)
         self.boutEff.setEnabled(False)
         self.boutSuite.setEnabled(False)
+        self.nbreRep.setStyleSheet("color: grey;font-size: 30px")
         
     def effacerReponses(self) -> None:
         """effacer réponses"""
@@ -117,7 +142,7 @@ class FrameDroiteHaute(QWidget):
         # changer couleur label
         self.labelPrenom.setStyleSheet("color: black;")
         self.labelNom.setStyleSheet("color: black;")
-        self.nomEntry.setStyleSheet("color: brown") 
+        self.nomEntry.setStyleSheet("color: back") 
         # effacer réponses
         self.effacerReponses()        
         # activer boutons 

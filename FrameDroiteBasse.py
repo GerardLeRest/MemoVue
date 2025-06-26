@@ -6,9 +6,10 @@
 # (apprentissage, test mental, test ecrit, Rechercher)
 # choix de la classe et de l'option
 #####################################################
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QRadioButton, QPushButton, QGridLayout, QLabel, QComboBox, QCheckBox
-import copy, sqlite3, os  # fichier Excel de l'établissement
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QRadioButton, QPushButton, QGridLayout, QLabel, QComboBox, QCheckBox, QButtonGroup
 from ModifierBDD import ModifierBDD
+from PyQt5.QtWidgets import QApplication
+import sys
 
 class FrameDroiteBasse (QWidget):
     """ Créer la partie droite basse de l'interface """
@@ -17,28 +18,38 @@ class FrameDroiteBasse (QWidget):
         # constructeur de la classe parente
         super().__init__(fenetre)
         self.listeEleves = []  # liste des élèves de la classe sélectionnée
-        self.listeOptions = []  # liste des options des élèves de la classeself/
+        self.listeOptions = []  # liste des options des élèves de la classese
         #self.modifier_bdd = ModifierBDD("fichiers/eleves.bdd") -faux?
         self.modifier_bdd = ModifierBDD("fichiers/eleves.db")
-        self.optionSelectionnee = "TOUS"  # optionsélectionnée
+        self.optionSelectionnee = ""  # option sélectionnée
 
         layoutBasDroit = QVBoxLayout()
+        layoutBasDroit.setSpacing(10)
         layoutBoutonsRadiosHaut = QHBoxLayout()
         # boutons radio des modes
         self.boutonRadioHaut1 = QRadioButton("Apprentissage")
-        layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut1)
         self.boutonRadioHaut2 = QRadioButton("Test mental")
-        layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut2)
-        self.boutonRadioHaut3 = QRadioButton("Test écrit")
-        layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut3)
+        self.boutonRadioHaut3 = QRadioButton("Test ecrit")
         self.boutonRadioHaut4 = QRadioButton("Rechercher")
+        # regroupement
+        self.groupeHaut = QButtonGroup()
+        self.groupeHaut.addButton(self.boutonRadioHaut1)
+        self.groupeHaut.addButton(self.boutonRadioHaut2)
+        self.groupeHaut.addButton(self.boutonRadioHaut3)
+        self.groupeHaut.addButton(self.boutonRadioHaut4)
+        # insetion dans le layout
+        layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut1)
+        layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut2)
+        layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut3)
         layoutBoutonsRadiosHaut.addWidget(self.boutonRadioHaut4)
          #bouton radi 1 est sélectionné
         self.boutonRadioHaut1.setChecked(True)
+        #rattachement au layout principal de la classe
         layoutBasDroit.addLayout(layoutBoutonsRadiosHaut)
         
         # Combobox - QGridLayout
         layoutGrille = QGridLayout()
+        layoutGrille.setSpacing(10)
          # labels)
         layoutGrille.addWidget(QLabel("Classe/Catégorie"), 0,0)
         layoutGrille.addWidget(QLabel("Option/Spécialité"),0,1)
@@ -56,28 +67,57 @@ class FrameDroiteBasse (QWidget):
         
         # checkbutton Aléatoite
         layoutCheckBox = QHBoxLayout()
-        self.checkBox = QCheckBox("AAleatoire")
+        self.checkBox = QCheckBox("Aleatoire")
         layoutCheckBox.addWidget(self.checkBox)
         layoutBasDroit.addLayout(layoutCheckBox)
-        self.checkBox.setEnabled(False) # désactiver le bouron checkBox
         
         # boutons radios avec/sans nom prénoms
-        layoutRadioBoutonsBas = QHBoxLayout()
+        layoutBoutonsRadiosBas = QHBoxLayout()
+        self.groupeBas = QButtonGroup()
         self.boutonRadioBas1 = QRadioButton("Prenom+Nom")
-        layoutRadioBoutonsBas.addWidget(self.boutonRadioBas1)
         self.boutonRadioBas2 = QRadioButton("Prenom")
-        layoutRadioBoutonsBas.addWidget(self.boutonRadioBas2)
         self.boutonRadioBas3 = QRadioButton("Nom")
-        layoutRadioBoutonsBas.addWidget(self.boutonRadioBas3)
+        # regroupement
+        self.groupeBas.addButton(self.boutonRadioBas1)
+        self.groupeBas.addButton(self.boutonRadioBas2)
+        self.groupeBas.addButton(self.boutonRadioBas3)
+        # attachement au layout horizontal
+        layoutBoutonsRadiosBas.addWidget(self.boutonRadioBas1)
+        layoutBoutonsRadiosBas.addWidget(self.boutonRadioBas2)
+        layoutBoutonsRadiosBas.addWidget(self.boutonRadioBas3)
          #bouton radi 1 est sélectionné
         self.boutonRadioBas1.setChecked(True)
-        layoutBasDroit.addLayout(layoutRadioBoutonsBas)
+        layoutBasDroit.addLayout(layoutBoutonsRadiosBas)
         
-    # Bouton pour valider le choix
-        layoutBouton = QHBoxLayout()
+        # Bouton pour valider le choix
+        bouton_style = """
+        QPushButton {
+            background-color: #e0e0e0;
+            border: 1px solid #888;
+            border-radius: 6px;
+            padding: 6px 14px;
+        }
+        QPushButton:hover {
+            background-color: #d0d0d0;
+        }
+        QPushButton:pressed {
+            background-color: #c0c0c0;
+        }
+        """
+        # Créer le bouton "Valider"
         self.boutonVal = QPushButton("Valider")
+        self.boutonVal.setFixedWidth(120)
+        self.boutonVal.setStyleSheet(bouton_style)
         self.boutonVal.clicked.connect(self.configRechercher)
+
+        # Centrer le bouton
+        layoutBouton = QHBoxLayout()
+        layoutBouton.addStretch()
         layoutBouton.addWidget(self.boutonVal)
+        layoutBouton.addStretch()
+
+        # Ajouter au layout principal du bas
+        layoutBasDroit.addSpacing(10)  # petit espace avant le bouton
         layoutBasDroit.addLayout(layoutBouton)
         # créer la liste des options
         self.creerComboOptions()
@@ -90,6 +130,7 @@ class FrameDroiteBasse (QWidget):
     def liste_des_classes(self) -> list:
         """Renvoie la liste des classes de l'établissement"""
         classes = self.modifier_bdd.lister_classes()
+        classes.insert(0,"- choisir une classe -")
         return classes
 
     def configRechercher(self) -> None:
@@ -118,15 +159,17 @@ class FrameDroiteBasse (QWidget):
         """Définir l'ordre de défilement"""
         self.ordreAleatoire = self.checkBox.isChecked() 
 
-    def choisir_classe_options(self, event) -> None :
+    def choisir_classe_options(self, event=None) -> None:
         """Choisir la classe et mettre à jour les élèves et les options"""
         classeSelectionnee = self.comboBoxGauche.currentText()
-        # Récupère la liste des élèves de la classe
-        # recupérer la liste des élèves
-        self.modifier_bdd.eleves_classe(classeSelectionnee)  # exécute la méthode (pas de retour)
+
+        # Met à jour les élèves via la BDD
+        self.modifier_bdd.eleves_classe(classeSelectionnee)
         self.listeEleves = self.modifier_bdd.listeEleves
-        # Récupère uniquement les options réellement présentes dans cette classe
+
+        # Crée les options présentes uniquement dans cette classe
         self.listeOptions = self.creerOptions()
+
         # Met à jour la combobox des options
         self.creerComboOptions()
 
@@ -134,34 +177,33 @@ class FrameDroiteBasse (QWidget):
         """Créer la liste des options présentes uniquement dans la classe sélectionnée"""
         listeOptions = []
         for eleve in self.listeEleves:
-            options = eleve[2]  # une liste d'options (ex: ['ALL2', 'CAM'])
+            options = eleve[3]  # Index 2 = liste des options (ex: ['ALL2', 'CAM'])
             for option in options:
                 if option not in listeOptions:
                     listeOptions.append(option)
         listeOptions = sorted(listeOptions)
         listeOptions.insert(0, "TOUS")
-        self.listeOptions = listeOptions  # mise à jour de l’attribut utilisé par la combobox
-        self.creerComboOptions()
+        self.listeOptions = listeOptions
         return listeOptions
-
+    
     def creerComboOptions(self) -> None:
-        """créer la liste des options"""
-        self.comboBoxDroite.blockSignals(True)  # éviter appel involontaire à choisirOption
-        self.comboBoxDroite.clear()  # vider l'ancienne liste
+        """Créer la liste déroulante des options sans déclencher d'événement parasite"""
+        #self.comboBoxDroite.blockSignals(True)  # Empêche les signaux lors de la modification
+        self.comboBoxDroite.clear()
         self.comboBoxDroite.addItems(self.listeOptions)
-        self.comboBoxDroite.blockSignals(False)
+        self.comboBoxDroite.setCurrentIndex(0)  # Facultatif : force "TOUS" si besoin
+        #self.comboBoxDroite.blockSignals(False)
         self.comboBoxDroite.currentTextChanged.connect(self.choisirOption)
 
-
-    def choisirOption(self, event) -> None:
-        """Sélectionner l'option des élèves"""
+    def choisirOption(self, event=None) -> None:
+        """Sélectionner une option"""
         self.optionSelectionnee = self.comboBoxDroite.currentText()
+        print("Option sélectionnée :", self.optionSelectionnee)
 
 # ----------------------------------------------------
 
 if __name__ == '__main__':
-    from PyQt5.QtWidgets import QApplication
-    import sys
+   
     app = QApplication(sys.argv)
     fenetre = FrameDroiteBasse()
     fenetre.show()
