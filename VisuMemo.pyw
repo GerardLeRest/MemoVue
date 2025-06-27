@@ -11,34 +11,52 @@ from FrameGauche import *
 from FrameDroiteHaute import *
 from FrameDroiteBasse import *
 
-from PySide6.QtWidgets import QMessageBox, QWidget, QApplication
-from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QLabel,
+    QVBoxLayout, QMenu, QMessageBox
+)
+from PySide6.QtGui import QPixmap, QAction
+import sys
 
 repertoire_racine = os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
 
-class Fenetre(QWidget):
+class Fenetre(QMainWindow):
     """ Créer l'interface graphique et lier les diffentes classes entre elles"""
     
-    def __init__(self) :
-        """Constructeur de la fenêtre principale"""
+    def __init__(self):
         super().__init__()   # constructeur de la classe parente
+        self.setWindowTitle("MémoLycée")  # (optionnel) Titre de la fenêtre
+
+        # Création des 3 frames
         self.FrameDrBa = FrameDroiteBasse(self)
         self.FrameDrHa = FrameDroiteHaute(self)
-        self.FrameG = FrameGauche (self,self.FrameDrBa.listeEleves)
-        layoutPrincipal = QGridLayout()
-        # position 0, 0, prends 2 lignes de haut, 1 colonne de largeur
-        layoutPrincipal.addWidget(self.FrameG, 0, 0, 2, 1 )   
+        self.FrameG = FrameGauche(self, self.FrameDrBa.listeEleves)
+
+        # Créer un widget central et y appliquer le layout principal
+        widget_central = QWidget()
+        layoutPrincipal = QGridLayout(widget_central)  # layout appliqué ici
+
+        layoutPrincipal.addWidget(self.FrameG, 0, 0, 2, 1)
         layoutPrincipal.addWidget(self.FrameDrHa, 0, 1)
         layoutPrincipal.addWidget(self.FrameDrBa, 1, 1)
-        self.setLayout(layoutPrincipal)
 
+        self.setCentralWidget(widget_central)  # c’est ici que tout s'affiche
+
+        # Connexions
         self.FrameDrBa.boutonVal.clicked.connect(self.configurer)
         self.FrameDrHa.boutVal.clicked.connect(self.verifierRechercher)
         self.FrameDrHa.boutEff.clicked.connect(self.effacer)
         self.FrameDrHa.boutSuite.clicked.connect(self.AllerALaSuite)
         self.FrameDrHa.prenomEntry.returnPressed.connect(self.validerRepNom)
         self.FrameDrHa.nomEntry.returnPressed.connect(self.verifierRechercher)
-        
+
+        # Menu Aide
+        menu_bar = self.menuBar()
+        menu_aide = QMenu("Aide", self)
+        action_licence = QAction("Licence GPL-v3", self)
+        action_licence.triggered.connect(self.afficher_licence)
+        menu_aide.addAction(action_licence)
+        menu_bar.addMenu(menu_aide)
 
         self.show()
        
@@ -306,27 +324,13 @@ class Fenetre(QWidget):
             self.focusNextChild()
 
                         
-    def information(self) -> None:
-        """ Informer sur le programme """
-        self.fenPropos = tk.Toplevel()
-        #bloque la fenêtre parente pour éviter de créer une deuxième fenêtre information        
-        while 1:
-            try:
-                self.fenPropos.grab_set()
-                break
-            except tk.TclError:
-                self.fenPropos.after(100) 
-        self.fenPropos.title("À propos de: ")
-        self.fenPropos.transient(self.fenPropos.master) # fenetre provisoire 
-                            # qui ne sera pas afficher dans la barre de tâche
-        frame1 = tk.Frame(self.fenPropos, padx=5, pady=1)
-        frame1.pack()
-        partie1=" Mémo_Lycée * v0.52 \n\n Copyrigth (c) - G LE REST - "
-        partie2="\n <gerard.lerest@orange.fr>"
-        partie3="\n 2016 - 2025 \n\n"
-        message=partie1+partie2+partie3
-        QMessageBox.information(self, "Licence GPLv3", message)
-    
+    def afficher_licence(self):
+        texte = (
+            "Ce logiciel est distribué sous licence GNU GPL version 3.\n\n"
+            "Vous pouvez le redistribuer et/ou le modifier selon les termes de cette licence.\n\n"
+            "Plus d'informations : https://www.gnu.org/licenses/gpl-3.0.html"
+        )
+        QMessageBox.information(self, "Licence GPL-v3", texte)
            
 # ----------------------------------------------------
         

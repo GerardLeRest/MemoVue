@@ -102,7 +102,6 @@ class FrameDroiteHaute(QWidget):
         # changer couleur label
         self.labelPrenom.setStyleSheet("color: black;")
         self.labelNom.setStyleSheet("color: black;")
-        #self.nbreRep.setStyleSheet("color: black;font-size: 30px")
         # Désactiver l'affichage des bonnes réponses
         self.DesAffichRep()
         # activer/désactiver boutons 
