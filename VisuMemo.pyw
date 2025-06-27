@@ -42,19 +42,19 @@ class Fenetre(QWidget):
 
         self.show()
        
-    def configurer(self,event) -> None:
+    def configurer(self) -> None:
         """ configurer l'application"""
         self.FrameDrHa.effacerReponses()
         if self.FrameDrBa.boutonRadioHaut4.isChecked(): # mode "Rechercher"
             self.FrameDrHa.configRechercher()
             # activer/désactiver zones de saisie 
-            self.actDesZonesSaisies()            
+            self.actDesZonesSaisies()          
         else:
             self.configAutresModes()           
         
     def actDesZonesSaisies(self) -> None:
         """Activer ou désactiver les zones de saisie selon le mode"""
-
+        
         if self.FrameDrBa.boutonRadioBas2.isChecked():  # prénom seul
             self.FrameDrHa.nomEntry.setEnabled(False)
             self.FrameDrHa.prenomEntry.setEnabled(True)
@@ -285,6 +285,9 @@ class Fenetre(QWidget):
                     self.FrameG.majNomPrenom()
                     self.FrameG.majClasseOptions()
                     self.FrameG.majPhoto()
+                    # Activation des boutons sous la photo
+                    for bouton in self.FrameG.boutons:
+                        bouton.setEnabled(True)
                     
 
     def validerRepNom(self):
@@ -297,9 +300,6 @@ class Fenetre(QWidget):
             if modeGeneral == "Test ecrit":  # Test écrit
                 self.verifier()
             else:
-                # Activer les boutons dans FrameG
-                for bouton in self.FrameG.boutons:
-                    bouton.setEnabled(True)
                 self.rechercher()
         else:
             # Passer au champ Nom

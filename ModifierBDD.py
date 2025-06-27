@@ -22,14 +22,13 @@ class ModifierBDD:
             SELECT 
                 e.prenom, 
                 e.nom, 
-                c.classe, 
+                e.classe, 
                 GROUP_CONCAT(o.option, ', '), 
                 e.photo
             FROM eleves e
-            JOIN eleves_classes_options eco ON eco.id_eleve = e.id
-            JOIN classes c ON c.id = eco.id_classe
-            LEFT JOIN options o ON o.id = eco.id_option
-            GROUP BY e.id, c.classe
+            LEFT JOIN eleves_options eo ON eo.id_eleve = e.id
+            LEFT JOIN options o ON o.id = eo.id_option
+            GROUP BY e.id, e.classe
         ''')
 
         for prenom, nom, classe, options_str, photo in self.curs.fetchall():

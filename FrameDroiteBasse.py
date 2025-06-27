@@ -138,10 +138,10 @@ class FrameDroiteBasse (QWidget):
            et des labels"""
         if self.boutonRadioHaut4.isChecked():
             # désactiver les radiobuttons
-            self.boutonRadioHaut1.setEnabled(False)
-            self.boutonRadioHaut2.setEnabled(False)
-            self.boutonRadioHaut3.setEnabled(False)
-            self.boutonRadioHaut4.setEnabled(False)
+            # self.boutonRadioHaut1.setEnabled(False)
+            # self.boutonRadioHaut2.setEnabled(False)
+            # self.boutonRadioHaut3.setEnabled(False)
+            # self.boutonRadioHaut4.setEnabled(False)
             # désactiver les listes des comboBox
             self.comboBoxGauche.setEnabled(False)
             self.comboBoxDroite.setEnabled(False)

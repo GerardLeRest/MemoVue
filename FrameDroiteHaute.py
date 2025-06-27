@@ -112,7 +112,7 @@ class FrameDroiteHaute(QWidget):
     
     def DesAffichRep(self) -> None:
         """ désactiver l'affichage des bonnes réponses"""
-        self.nbreRep.setStyleSheet("color: black;font-size: 30px") #nbre bonnes reponses en gris
+        self.nbreRep.setStyleSheet("color: grey;font-size: 30px") #nbre bonnes reponses en gris
         self.nbreRepExactes=0  # nbre de réponses exactes
         # maj nbrebonnes réponses
         self.nbreRep.setText(str(self.nbreRepExactes)+os.sep+"0")    
@@ -135,7 +135,9 @@ class FrameDroiteHaute(QWidget):
         self.nomEntry.clear()
         # effacer icone
         self.image = QPixmap(repertoire_racine+os.sep+"fichiers"+os.sep+"icones"+os.sep+"transparent.png")
-        self.labelImageGauche.setPixmap(self.image)    
+        self.labelImageGauche.setPixmap(self.image) 
+        # désactiver - Nbres bonne réponse  
+        self.nbreRep.setEnabled(False) 
         
     def configTestEcrit(self) -> None:
         """ configurer - Test écrit """
@@ -143,6 +145,7 @@ class FrameDroiteHaute(QWidget):
         self.labelPrenom.setStyleSheet("color: black;")
         self.labelNom.setStyleSheet("color: black;")
         self.nomEntry.setStyleSheet("color: back") 
+        self.nbreRep.setStyleSheet("color: back; font-size:30px;") 
         # effacer réponses
         self.effacerReponses()        
         # activer boutons 

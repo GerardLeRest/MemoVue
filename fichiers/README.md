@@ -37,8 +37,7 @@ Le programme nécessite les bibliothèques suivantes :
 - `sqlite3` (intégré à Python pour la gestion de la base de données - ne pas installer)
 - 'PySide6' (bibliothèque graphique)
 
-Vous pouvez aussi l' installer manuellement si besoin :
-
+Pour installer PySide6:
 ```bash
 pip install pyside6
 ```
