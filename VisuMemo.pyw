@@ -25,8 +25,9 @@ class Fenetre(QMainWindow):
     
     def __init__(self):
         super().__init__()   # constructeur de la classe parente
-        self.setWindowTitle("MémoLycée")  # (optionnel) Titre de la fenêtre
-
+        self.setWindowTitle("MémoLycée")  # Titre de la fenêtre
+        self.setMaximumSize(self.width(), self.height()) # empêchement d'aggranissement de la fenêtre
+        
         # Création des 3 frames
         self.FrameDrBa = FrameDroiteBasse(self)
         self.FrameDrHa = FrameDroiteHaute(self)
@@ -52,12 +53,17 @@ class Fenetre(QMainWindow):
 
         # Menu Aide
         menu_bar = self.menuBar()
-        menu_aide = QMenu("Aide", self)
-        action_licence = QAction("Licence GPL-v3", self)
-        action_licence.triggered.connect(self.afficher_licence)
-        menu_aide.addAction(action_licence)
+        menu_aide = QMenu("Menu", self)
         menu_bar.addMenu(menu_aide)
-
+        # Licence
+        actionLicence = QAction("Licence GPL-v3", self)
+        actionLicence.triggered.connect(self.afficherLicence)
+        menu_aide.addAction(actionLicence)
+        # Quitter
+        action_quitter = QAction("Quitter", self)
+        action_quitter.triggered.connect(self.quitter)
+        menu_aide.addAction(action_quitter)
+                
         self.show()
        
     def configurer(self) -> None:
@@ -118,7 +124,7 @@ class Fenetre(QMainWindow):
         if self.FrameG.listeEleves and all(len(eleve) >= 4 for eleve in self.FrameG.listeEleves):
             self.FrameG.maj()
         else:
-            print("❌ Données incomplètes ou non chargées, affichage annulé.")
+            print("Données incomplètes ou non chargées, affichage annulé.")
 
 
     def configTestEcrit(self) -> None:
@@ -271,42 +277,51 @@ class Fenetre(QMainWindow):
             pass
     
     def rechercher(self):
-        """Rechercher un élève dans tout l'établissement selon le nom, prénom ou les deux (avec print de débogage)"""
+        """Rechercher un ou plusieurs élèves dans tout l'établissement selon le nom, prénom ou les deux"""
 
         self.FrameG.listeEleves = []
         self.FrameG.rang = 0
-        resultat = "pas trouvé"
 
-        # Lecture et mise en minuscules
-        nom = self.FrameDrHa.nomEntry.text().lower()
-        prenom = self.FrameDrHa.prenomEntry.text().lower()
+        # Lecture des champs et mise en forme
+        nom = self.FrameDrHa.nomEntry.text().lower().strip()
+        prenom = self.FrameDrHa.prenomEntry.text().lower().strip()
         mode = self.FrameDrBa.groupeBas.checkedButton().text()
 
+        # Boucle sur tous les élèves de l'établissement
+        for eleve in self.FrameDrBa.modifier_bdd.listesEleves:
+            prenom_eleve = eleve[0].lower().strip()
+            nom_eleve = eleve[1].lower().strip()
 
-        for _, liste_eleves in self.FrameDrBa.modifier_bdd.ElevesParClasses.items():
-            for eleve in liste_eleves:
-                prenomEleve = eleve[0].lower()
-                nomEleve = eleve[1].lower()
+            if mode == "Prenom":
+                condition = (prenom == prenom_eleve)
+            elif mode == "Nom":
+                condition = (nom == nom_eleve)
+            else:
+                condition = (prenom == prenom_eleve and nom == nom_eleve)
 
-                if mode == "Prenom":  # prénom seul
-                    condition = (prenom == prenomEleve)
-                elif mode == "Nom":  # nom seul
-                    condition = (nom == nomEleve)
-                else:  # nom + prénom
-                    condition = (prenom == prenomEleve and nom == nomEleve)
+            if condition:
+                self.FrameG.listeEleves.append(eleve)
 
-                if condition:
-                    self.FrameG.listeEleves.append(eleve)
-                    self.FrameG.nbreElev = len(self.FrameG.listeEleves)
-                    self.FrameG.rang = 0
-                    self.FrameG.numOrdreElev.setText(f"1/{self.FrameG.nbreElev}")
-                    self.FrameG.majNomPrenom()
-                    self.FrameG.majClasseOptions()
-                    self.FrameG.majPhoto()
-                    # Activation des boutons sous la photo
-                    for bouton in self.FrameG.boutons:
-                        bouton.setEnabled(True)
-                    
+        # Après avoir collecté tous les résultats, mise à jour
+        self.FrameG.nbreElev = len(self.FrameG.listeEleves)
+
+        if self.FrameG.nbreElev > 0:
+            self.FrameG.rang = 0
+            self.FrameG.numOrdreElev.setText(f"1/{self.FrameG.nbreElev}")
+            self.FrameG.majNomPrenom()
+            self.FrameG.majClasseOptions()
+            self.FrameG.majPhoto()
+            # activation/désactivation boutons sous image - rechercher
+            if self.FrameG.nbreElev<=1:
+                for bouton in self.FrameG.boutons:
+                    bouton.setEnabled(False)
+            else:
+                for bouton in self.FrameG.boutons:
+                    bouton.setEnabled(True)
+        else:
+            self.FrameG.numOrdreElev.setText("0/0")
+            QMessageBox.information(self, "Aucun résultat", "Aucun élève trouvé.")
+
 
     def validerRepNom(self):
         """Valider l'entrée prénom selon le mode sélectionné, ou passer au champ nom"""
@@ -324,13 +339,17 @@ class Fenetre(QMainWindow):
             self.focusNextChild()
 
                         
-    def afficher_licence(self):
+    def afficherLicence(self):
         texte = (
             "Ce logiciel est distribué sous licence GNU GPL version 3.\n\n"
             "Vous pouvez le redistribuer et/ou le modifier selon les termes de cette licence.\n\n"
             "Plus d'informations : https://www.gnu.org/licenses/gpl-3.0.html"
         )
         QMessageBox.information(self, "Licence GPL-v3", texte)
+    
+    def quitter(self):
+        print ("Quitter")
+        self.close()
            
 # ----------------------------------------------------
         

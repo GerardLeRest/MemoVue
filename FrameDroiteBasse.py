@@ -129,7 +129,7 @@ class FrameDroiteBasse (QWidget):
         
     def liste_des_classes(self) -> list:
         """Renvoie la liste des classes de l'établissement"""
-        classes = self.modifier_bdd.lister_classes()
+        classes = self.modifier_bdd.listerClasses()
         classes.insert(0,"- choisir une classe -")
         return classes
 
@@ -164,7 +164,7 @@ class FrameDroiteBasse (QWidget):
         classeSelectionnee = self.comboBoxGauche.currentText()
 
         # Met à jour les élèves via la BDD
-        self.modifier_bdd.eleves_classe(classeSelectionnee)
+        self.modifier_bdd.elevesClasse(classeSelectionnee)
         self.listeEleves = self.modifier_bdd.listeEleves
 
         # Crée les options présentes uniquement dans cette classe

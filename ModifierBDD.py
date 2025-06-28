@@ -1,22 +1,22 @@
 import sqlite3
 
 class ModifierBDD:
-    def __init__(self, chemin_fichier):
-        self.chemin_fichier = chemin_fichier
-        self.conn = sqlite3.connect(self.chemin_fichier)
+    """Manipulation de la BDD"""
+    def __init__(self, cheminFichier):
+        self.cheminFichier = cheminFichier
+        self.conn = sqlite3.connect(self.cheminFichier)
         self.curs = self.conn.cursor()
         self.curs.execute("PRAGMA foreign_keys=on;")
+        self.listesEleves = []        # Tous les élèves de l'établissement
+        self.listeEleves = []         # Élèves sélectionnés (par classe, recherche…)
+        self.elevesParClasses = {}
 
-        self.listeEleves = []
-        self.eleves = []
-        self.ElevesParClasses = {}
+        self.chargerElevesEtClasses()
 
-        self.charger_eleves_et_classes()
 
-    def charger_eleves_et_classes(self):
-        """Charge tous les élèves classés par classe dans un dictionnaire, et une liste globale"""
-        self.eleves = []
-        self.ElevesParClasses = {}
+    def chargerElevesEtClasses(self):
+        self.listesEleves.clear()
+        self.elevesParClasses.clear()
 
         self.curs.execute('''
             SELECT 
@@ -31,30 +31,28 @@ class ModifierBDD:
             GROUP BY e.id, e.classe
         ''')
 
-        for prenom, nom, classe, options_str, photo in self.curs.fetchall():
-            liste_options = options_str.split(', ') if options_str else []
-            eleve = [prenom, nom, classe, liste_options, photo]
+        for prenom, nom, classe, optionsStr, photo in self.curs.fetchall():
+            listeOptions = optionsStr.split(', ') if optionsStr else []
+            eleve = [prenom, nom, classe, listeOptions, photo]
 
-            if classe not in self.ElevesParClasses:
-                self.ElevesParClasses[classe] = []
+            self.listesEleves.append(eleve)  # tous les élèves de la BDD
 
-            self.ElevesParClasses[classe].append(eleve)
-            self.eleves.append(eleve)
+            if classe not in self.elevesParClasses:
+                self.elevesParClasses[classe] = []
+            self.elevesParClasses[classe].append(eleve)
 
-    def eleves_classe(self, classe_nom):
-        """Charge les élèves d'une classe spécifique depuis les données déjà chargées"""
-        self.listeEleves = self.ElevesParClasses.get(classe_nom, [])
-        self.eleves = self.listeEleves.copy()
+    def elevesClasse(self, classeNom):
+        """Filtrer les élèves d’une classe spécifique"""
+        self.listeEleves = self.elevesParClasses.get(classeNom, []).copy()
 
-    def lister_classes(self):
+    def listerClasses(self):
         """Retourne la liste des noms de classes"""
-        return list(self.ElevesParClasses.keys())
+        return list(self.elevesParClasses.keys())
 
-    def fermer_connexion(self):
+    def fermerConnexion(self):
         self.conn.close()
 
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
     bdd = ModifierBDD("fichiers/eleves.db")
-    bdd.charger_eleves_et_classes()
-
+    bdd.chargerElevesEtClasses()
