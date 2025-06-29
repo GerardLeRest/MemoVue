@@ -64,7 +64,14 @@ python memo_lycee.pyw
 - Testé sous Ubuntu
 - L’application est en cours d’amélioration (v0.51)
 
-## 📄 Licence
+## Licence _ photos
 
-Ce projet est distribué sous licence MIT.  
+Ce projet est distribué sous licence GPL-v3.  
 © 2025 Gérard LE REST
+
+Les portraits utilisés dans ce projet proviennent de **Generated Photos**  
+→ https://generated.photos  
+
+Images générées par intelligence artificielle, utilisées dans un cadre pédagogique non commercial.  
+Mention requise :  
+**“Image by Generated Photos (https://generated.photos), used with permission.”**
