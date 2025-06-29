@@ -25,7 +25,7 @@ class Fenetre(QMainWindow):
     
     def __init__(self):
         super().__init__()   # constructeur de la classe parente
-        self.setWindowTitle("MémoLycée")  # Titre de la fenêtre
+        self.setWindowTitle("MemoVue")  # Titre de la fenêtre
         self.setMaximumSize(self.width(), self.height()) # empêchement d'aggranissement de la fenêtre
         
         # Création des 3 frames
@@ -83,12 +83,12 @@ class Fenetre(QMainWindow):
             self.FrameDrHa.nomEntry.setEnabled(False)
             self.FrameDrHa.prenomEntry.setEnabled(True)
             self.FrameDrHa.prenomEntry.setFocus()
-
+            
         elif self.FrameDrBa.boutonRadioBas3.isChecked():  # nom seul
             self.FrameDrHa.prenomEntry.setEnabled(False)
             self.FrameDrHa.nomEntry.setEnabled(True)
             self.FrameDrHa.nomEntry.setFocus()
-
+           
         else:  # nom + prénom
             self.FrameDrHa.prenomEntry.setEnabled(True)
             self.FrameDrHa.nomEntry.setEnabled(True)
@@ -215,6 +215,7 @@ class Fenetre(QMainWindow):
         if mode in ["Prenom+Nom", "Nom"]:  # le nom doit être vérifié
             match &= nom.lower() == nomAttendu.lower()
         if mode in ["Prenom+Nom", "Prenom"]:  # le prénom doit être vérifié
+            self.FrameDrHa.nomEntry.setEnabled(False) # désactivation du nom
             match &= prenom.lower() == prenomAttendu.lower()
 
         # Affichage des icones

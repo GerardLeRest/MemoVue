@@ -143,7 +143,7 @@ class FrameDroiteHaute(QWidget):
         # changer couleur label
         self.labelPrenom.setStyleSheet("color: black;")
         self.labelNom.setStyleSheet("color: black;")
-        self.nomEntry.setStyleSheet("color: back") 
+        self.nomEntry.setStyleSheet("color: black") 
         self.nbreRep.setStyleSheet("color: back; font-size:30px;") 
         # effacer réponses
         self.effacerReponses()        
