@@ -46,7 +46,7 @@ pip install pyside6
 
 Le programme utilise :
 
-- Une base de données SQLite (`eleves.db`)
+- Une base de données SQLite (`personnes.de`)
 - Des images des élèves (dans un dossier `photos/`)
 - Des fichiers CSV pour l'importation initiale
 

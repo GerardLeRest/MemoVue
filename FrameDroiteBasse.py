@@ -19,8 +19,8 @@ class FrameDroiteBasse (QWidget):
         super().__init__(fenetre)
         self.listeEleves = []  # liste des élèves de la classe sélectionnée
         self.listeOptions = []  # liste des options des élèves de la classese
-        #self.modifier_bdd = ModifierBDD("fichiers/eleves.bdd") -faux?
-        self.modifier_bdd = ModifierBDD("fichiers/eleves.db")
+        #self.modifier_bdd = ModifierBDD("fichiers/personnes.bdd") -faux?
+        self.modifier_bdd = ModifierBDD("eleves.db")
         self.optionSelectionnee = ""  # option sélectionnée
 
         layoutBasDroit = QVBoxLayout()
@@ -90,24 +90,26 @@ class FrameDroiteBasse (QWidget):
         layoutBasDroit.addLayout(layoutBoutonsRadiosBas)
         
         # Bouton pour valider le choix
-        bouton_style = """
-        QPushButton {
-            background-color: #e0e0e0;
-            border: 1px solid #888;
-            border-radius: 6px;
-            padding: 6px 14px;
-        }
-        QPushButton:hover {
-            background-color: #d0d0d0;
-        }
-        QPushButton:pressed {
-            background-color: #c0c0c0;
-        }
+        validerStyle = """
+            QPushButton {
+                background-color: #76aeba;
+                border: 1px solid #558b9e;
+                border-radius: 6px;
+                padding: 6px 14px;
+                color: white;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #66a0b0;
+            }
+            QPushButton:pressed {
+                background-color: #5c8c9c;
+            }
         """
         # Créer le bouton "Valider"
         self.boutonVal = QPushButton("Valider")
         self.boutonVal.setFixedWidth(120)
-        self.boutonVal.setStyleSheet(bouton_style)
+        self.boutonVal.setStyleSheet(validerStyle)
         self.boutonVal.clicked.connect(self.configRechercher)
 
         # Centrer le bouton
@@ -129,9 +131,9 @@ class FrameDroiteBasse (QWidget):
         
     def liste_des_classes(self) -> list:
         """Renvoie la liste des classes de l'établissement"""
-        classes = self.modifier_bdd.listerClasses()
-        classes.insert(0,"- choisir une classe -")
-        return classes
+        structures = self.modifier_bdd.listerStructures()
+        structures.insert(0,"- choisir une classe -")
+        return structures
 
     def configRechercher(self) -> None:
         """activer/désactiver les listes les comboBox, des radiobuttons
@@ -164,8 +166,8 @@ class FrameDroiteBasse (QWidget):
         classeSelectionnee = self.comboBoxGauche.currentText()
 
         # Met à jour les élèves via la BDD
-        self.modifier_bdd.elevesClasse(classeSelectionnee)
-        self.listeEleves = self.modifier_bdd.listeEleves
+        self.modifier_bdd.personnesStructure(classeSelectionnee)
+        self.listeEleves = self.modifier_bdd.listePersonnes
 
         # Crée les options présentes uniquement dans cette classe
         self.listeOptions = self.creerOptions()

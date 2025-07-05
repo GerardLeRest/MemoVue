@@ -7,7 +7,7 @@
 #####################################################
 
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton, QApplication
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton, QApplication, QSpacerItem, QSizePolicy
 from PySide6.QtGui import QPixmap
 import os, sys
 
@@ -28,46 +28,82 @@ class FrameDroiteHaute(QWidget):
         self.labelPrenom = QLabel("Prénom")
         layoutGrille.addWidget(self.labelPrenom,0,0)
         self.prenomEntry = QLineEdit()  # Removed undefined widget
+        self.prenomEntry.setStyleSheet("""
+            QLineEdit {
+                background-color: white;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                padding: 4px 8px;
+            }
+        """)
         self.prenomEntry.setPlaceholderText("Prenom")
         layoutGrille.addWidget(self.prenomEntry,0, 1)
         # nom
         self.labelNom = QLabel("Nom")
         layoutGrille.addWidget(self.labelNom,1,0)
         self.nomEntry = QLineEdit()  # Removed undefined widget
+        self.nomEntry.setStyleSheet("""
+            QLineEdit {
+                background-color: white;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                padding: 4px 8px;
+            }
+        """)
         self.nomEntry.setPlaceholderText("Nom")
         layoutGrille.addWidget(self.nomEntry,1, 1)
         layoutDroitHaut.addLayout(layoutGrille)
         layoutDroitHaut.addSpacing(5)
         # Zone boutons - QHBoxLayout
-        bouton_style = """
-        QPushButton {
-            background-color: #e0e0e0;
-            border: 1px solid #888;
-            border-radius: 6px;            /* ← coins arrondis */
-            padding: 6px 14px;             /* ← espace intérieur (haut/bas, gauche/droite) */
-        }
-        QPushButton:hover {
-            background-color: #d0d0d0;
-        }
-        QPushButton:pressed {
-            background-color: #c0c0c0;
-        }
+        validerStyle = """
+            QPushButton {
+                background-color: #76aeba;
+                border: 1px solid #558b9e;
+                border-radius: 6px;
+                padding: 6px 14px;
+                color: white;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #66a0b0;
+            }
+            QPushButton:pressed {
+                background-color: #5c8c9c;
+            }
         """
+        autresBoutonsStyle = """
+            QPushButton {
+                background-color: #a0c6ce;
+                border: 1px solid #7aa0aa;
+                border-radius: 6px;
+                padding: 6px 14px;
+                color: black;
+            }
+            QPushButton:hover {
+                background-color: #90b6be;
+            }
+            QPushButton:pressed {
+                background-color: #80a4ac;
+            }
+        """
+
         layoutBoutons = QHBoxLayout()
         # bouton valider
         self.boutVal = QPushButton ("Valider", self)
-        self.boutVal.setStyleSheet(bouton_style)
+        self.boutVal.setStyleSheet(validerStyle)
         layoutBoutons.addWidget(self.boutVal)
         # bouton effacer
         self.boutEff = QPushButton ("Effacer", self)
-        self.boutEff.setStyleSheet(bouton_style)
+        self.boutEff.setStyleSheet(autresBoutonsStyle)
         layoutBoutons.addWidget(self.boutEff)
         # bouton Suite
         self.boutSuite = QPushButton ("Suite", self)
-        self.boutSuite.setStyleSheet(bouton_style)
-        self.boutSuite.setStyleSheet(bouton_style)
+        self.boutSuite.setStyleSheet(autresBoutonsStyle)
+        self.boutSuite.setStyleSheet(autresBoutonsStyle)
         layoutBoutons.addWidget(self.boutSuite)
-        # ajouter boutonsWidget à layoutHautDroit    
+        # espacement au dessus des boutons
+        spacer = QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        layoutDroitHaut.addItem(spacer)
         layoutDroitHaut.addLayout(layoutBoutons)
 
         # désativer les boutons

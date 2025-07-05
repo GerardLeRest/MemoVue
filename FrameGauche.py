@@ -26,7 +26,7 @@ class FrameGauche (QWidget):
         # poisition de LayoutGauche dans la fenetre principale de la fenêtreself.LayoutPrincipal(row=0,column=0,rowspan=3,padx=10,pady=2)
         self.listeEleves=listeEleves #liste des élèves
         self.rang=0     #rang de l'élève dans la classe
-        self.modif_bdd = ModifierBDD("fichiers/eleves.db")
+        self.modif_bdd = ModifierBDD("eleves.db")
         self.nbreElev=0 # nbre élèves
         self.resize(150, 100) # définir une taille fixe pour la fenêtre
 
@@ -37,15 +37,15 @@ class FrameGauche (QWidget):
         layoutGrille = QGridLayout()
         self.prenom = QLabel("-")
         self.prenom.setText("Prénom")
-        self.prenom.setStyleSheet("color: #006060; font-weight: bold;")
+        self.prenom.setStyleSheet("color: #446069; font-weight: bold; font-size: 16px")
         layoutGrille.addWidget(self.prenom, 0, 1)
-        layoutGrille.addWidget(QLabel("Prenom: "), 0, 0)
+        layoutGrille.addWidget(QLabel("Prénom :"), 0, 0, alignment=Qt.AlignRight)
         # nom
         self.nom = QLabel()
         self.nom.setText("Nom")
-        self.nom.setStyleSheet("color: #336699; font-weight: bold;")
+        self.nom.setStyleSheet("color: #446069; font-weight: bold; font-size: 16px")
         layoutGrille.addWidget(self.nom, 1, 1)
-        layoutGrille.addWidget(QLabel("Nom:"), 1, 0) 
+        layoutGrille.addWidget(QLabel("Nom :"), 1, 0, alignment=Qt.AlignRight)
         # attachement à layoutGauche
         layoutGauche.addLayout(layoutGrille)
         
@@ -94,7 +94,7 @@ class FrameGauche (QWidget):
         # affichage de la classe 
         self.classe=QLabel() # permet de changer le texte du label
         self.classe.setText("CLASSE-CATÉGORIE")
-        self.classe.setStyleSheet("color: #6A8FA0; font-weight: bold; font-size: 9pt;")
+        self.classe.setStyleSheet("color: #76aeba; font-weight: bold; font-size: 11pt;")
         layoutBas.addWidget(self.classe, alignment=Qt.AlignCenter)
         # affichage des options
         self.options = QLabel() # permet de changer le texte du label

@@ -289,7 +289,7 @@ class Fenetre(QMainWindow):
         mode = self.FrameDrBa.groupeBas.checkedButton().text()
 
         # Boucle sur tous les élèves de l'établissement
-        for eleve in self.FrameDrBa.modifier_bdd.listesEleves:
+        for eleve in self.FrameDrBa.modifier_bdd.listesPersonnes:
             prenom_eleve = eleve[0].lower().strip()
             nom_eleve = eleve[1].lower().strip()
 

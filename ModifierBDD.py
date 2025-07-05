@@ -7,52 +7,55 @@ class ModifierBDD:
         self.conn = sqlite3.connect(self.cheminFichier)
         self.curs = self.conn.cursor()
         self.curs.execute("PRAGMA foreign_keys=on;")
-        self.listesEleves = []        # Tous les élèves de l'établissement
-        self.listeEleves = []         # Élèves sélectionnés (par classe, recherche…)
-        self.elevesParClasses = {}
 
-        self.chargerElevesEtClasses()
+        self.listesPersonnes = []          # Toutes les personnes de la BDD
+        self.listePersonnes = []           # Personnes filtrées
+        self.personnesParStructure = {}    # Trie par structure (anciennement "classe")
+
+        self.chargerPersonnesEtStructures()
 
 
-    def chargerElevesEtClasses(self):
-        self.listesEleves.clear()
-        self.elevesParClasses.clear()
+    def chargerPersonnesEtStructures(self):
+        """Charge toutes les personnes et les organise par structure"""
+        self.listesPersonnes.clear()
+        self.personnesParStructure.clear()
 
         self.curs.execute('''
             SELECT 
                 e.prenom, 
                 e.nom, 
-                e.classe, 
-                GROUP_CONCAT(o.option, ', '), 
+                e.structure, 
+                GROUP_CONCAT(o.specialite, ', '), 
                 e.photo
-            FROM eleves e
-            LEFT JOIN eleves_options eo ON eo.id_eleve = e.id
-            LEFT JOIN options o ON o.id = eo.id_option
-            GROUP BY e.id, e.classe
+            FROM personnes e
+            LEFT JOIN personnes_specialites eo ON eo.id_personne = e.id
+            LEFT JOIN specialites o ON o.id = eo.id_specialite
+            GROUP BY e.id
         ''')
 
-        for prenom, nom, classe, optionsStr, photo in self.curs.fetchall():
+        for prenom, nom, structure, optionsStr, photo in self.curs.fetchall():
             listeOptions = optionsStr.split(', ') if optionsStr else []
-            eleve = [prenom, nom, classe, listeOptions, photo]
+            personne = [prenom, nom, structure, listeOptions, photo]
 
-            self.listesEleves.append(eleve)  # tous les élèves de la BDD
+            self.listesPersonnes.append(personne)
 
-            if classe not in self.elevesParClasses:
-                self.elevesParClasses[classe] = []
-            self.elevesParClasses[classe].append(eleve)
+            if structure not in self.personnesParStructure:
+                self.personnesParStructure[structure] = []
+            self.personnesParStructure[structure].append(personne)
 
-    def elevesClasse(self, classeNom):
-        """Filtrer les élèves d’une classe spécifique"""
-        self.listeEleves = self.elevesParClasses.get(classeNom, []).copy()
+    def personnesStructure(self, structureNom):
+        """Filtrer les personnes d’une structure spécifique"""
+        self.listePersonnes = self.personnesParStructure.get(structureNom, []).copy()
 
-    def listerClasses(self):
-        """Retourne la liste des noms de classes"""
-        return list(self.elevesParClasses.keys())
+    def listerStructures(self):
+        """Retourne la liste des noms de structures"""
+        return list(self.personnesParStructure.keys())
 
     def fermerConnexion(self):
         self.conn.close()
 
+
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
-    bdd = ModifierBDD("fichiers/eleves.db")
-    bdd.chargerElevesEtClasses()
+    bdd = ModifierBDD("eleves.db")
+    bdd.chargerPersonnesEtStructures()

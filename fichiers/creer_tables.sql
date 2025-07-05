@@ -1,7 +1,7 @@
 PRAGMA foreign_keys = ON;
 
 DROP TABLE IF EXISTS eleves_classes_options;
-DROP TABLE IF EXISTS eleves;
+DROP TABLE IF EXISTS personnes;
 DROP TABLE IF EXISTS classes;
 DROP TABLE IF EXISTS options;
 
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS classes (
     classe TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS eleves (
+CREATE TABLE IF NOT EXISTS personnes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nom TEXT NOT NULL,
     prenom TEXT NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS eleves_classes_options (
     id_eleve INTEGER,
     id_classe INTEGER,
     id_option INTEGER,
-    FOREIGN KEY (id_eleve) REFERENCES eleves(id),
+    FOREIGN KEY (id_eleve) REFERENCES personnes(id),
     FOREIGN KEY (id_classe) REFERENCES classes(id),
     FOREIGN KEY (id_option) REFERENCES options(id)
 );
