@@ -93,12 +93,12 @@ class FrameGauche (QWidget):
         layoutBas.addWidget(self.numOrdreElev, alignment=Qt.AlignCenter)
         # affichage de la classe 
         self.classe=QLabel() # permet de changer le texte du label
-        self.classe.setText("CLASSE-CATÉGORIE")
+        self.classe.setText("Structure")
         self.classe.setStyleSheet("color: #76aeba; font-weight: bold; font-size: 11pt;")
         layoutBas.addWidget(self.classe, alignment=Qt.AlignCenter)
         # affichage des options
         self.options = QLabel() # permet de changer le texte du label
-        self.options.setText("OPTIONS")
+        self.options.setText("Spécialités")
         layoutBas.addWidget(self.options, alignment=Qt.AlignCenter)
         # attachement au layout gauche
         layoutGauche.addLayout(layoutBas)
@@ -153,8 +153,8 @@ class FrameGauche (QWidget):
         self.labelImage.setPixmap(QPixmap(image_par_defaut))   
             
     def majPhoto(self) -> None:
-        chemin_rel = self.listeEleves[self.rang][4]
-        chemin_image = os.path.join(repertoire_racine, chemin_rel)
+        nomImage = self.listeEleves[self.rang][4]
+        chemin_image = os.path.join(repertoire_racine, "fichiers", "photos","eleves", nomImage )
         self.labelImage.setPixmap(QPixmap(chemin_image))
 
     def majNomPrenom(self):

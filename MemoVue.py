@@ -12,8 +12,8 @@ from FrameDroiteHaute import *
 from FrameDroiteBasse import *
 
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QLabel,
-    QVBoxLayout, QMenu, QMessageBox
+    QApplication, QMainWindow, QWidget,
+    QMenu, QMessageBox
 )
 from PySide6.QtGui import QPixmap, QAction
 import sys

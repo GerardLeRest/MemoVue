@@ -51,8 +51,8 @@ class FrameDroiteBasse (QWidget):
         layoutGrille = QGridLayout()
         layoutGrille.setSpacing(10)
          # labels)
-        layoutGrille.addWidget(QLabel("Classe/Catégorie"), 0,0)
-        layoutGrille.addWidget(QLabel("Option/Spécialité"),0,1)
+        layoutGrille.addWidget(QLabel("Structures"), 0,0)
+        layoutGrille.addWidget(QLabel("Spécialités"),0,1)
         ## ComboBox
         self.comboBoxGauche = QComboBox()
         self.comboBoxDroite = QComboBox()
@@ -132,7 +132,7 @@ class FrameDroiteBasse (QWidget):
     def liste_des_classes(self) -> list:
         """Renvoie la liste des classes de l'établissement"""
         structures = self.modifier_bdd.listerStructures()
-        structures.insert(0,"- choisir une classe -")
+        structures.insert(0,"- choisir une structure -")
         return structures
 
     def configRechercher(self) -> None:

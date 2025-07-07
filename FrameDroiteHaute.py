@@ -7,7 +7,7 @@
 #####################################################
 
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton, QApplication, QSpacerItem, QSizePolicy
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEdit, QHBoxLayout, QPushButton, QApplication, QSpacerItem, QSizePolicy, QFrame
 from PySide6.QtGui import QPixmap
 import os, sys
 
@@ -36,7 +36,7 @@ class FrameDroiteHaute(QWidget):
                 padding: 4px 8px;
             }
         """)
-        self.prenomEntry.setPlaceholderText("Prenom")
+        self.prenomEntry.setPlaceholderText("Indiquez votre prénom")
         layoutGrille.addWidget(self.prenomEntry,0, 1)
         # nom
         self.labelNom = QLabel("Nom")
@@ -50,7 +50,7 @@ class FrameDroiteHaute(QWidget):
                 padding: 4px 8px;
             }
         """)
-        self.nomEntry.setPlaceholderText("Nom")
+        self.nomEntry.setPlaceholderText("Indiquez votre nom")
         layoutGrille.addWidget(self.nomEntry,1, 1)
         layoutDroitHaut.addLayout(layoutGrille)
         layoutDroitHaut.addSpacing(5)
@@ -71,22 +71,38 @@ class FrameDroiteHaute(QWidget):
                 background-color: #5c8c9c;
             }
         """
-        autresBoutonsStyle = """
+
+        suiteBoutonStyle = """
             QPushButton {
-                background-color: #a0c6ce;
-                border: 1px solid #7aa0aa;
+                background-color: #a6d0c0;
+                border: 1px solid #7fb09b;
                 border-radius: 6px;
                 padding: 6px 14px;
                 color: black;
             }
             QPushButton:hover {
-                background-color: #90b6be;
+                background-color: #95c0b0;
             }
             QPushButton:pressed {
-                background-color: #80a4ac;
+                background-color: #84b0a0;
             }
         """
 
+        effaceBoutonStyle =   """
+            QPushButton {
+                background-color: #9aaab8;
+                border: 1px solid #7a8a98;
+                border-radius: 6px;
+                padding: 6px 14px;
+                color: black;
+            }
+            QPushButton:hover {
+                background-color: #8b9ba9;
+            }
+            QPushButton:pressed {
+                background-color: #7c8c99;
+            }
+        """
         layoutBoutons = QHBoxLayout()
         # bouton valider
         self.boutVal = QPushButton ("Valider", self)
@@ -94,12 +110,11 @@ class FrameDroiteHaute(QWidget):
         layoutBoutons.addWidget(self.boutVal)
         # bouton effacer
         self.boutEff = QPushButton ("Effacer", self)
-        self.boutEff.setStyleSheet(autresBoutonsStyle)
+        self.boutEff.setStyleSheet(effaceBoutonStyle)
         layoutBoutons.addWidget(self.boutEff)
         # bouton Suite
         self.boutSuite = QPushButton ("Suite", self)
-        self.boutSuite.setStyleSheet(autresBoutonsStyle)
-        self.boutSuite.setStyleSheet(autresBoutonsStyle)
+        self.boutSuite.setStyleSheet(suiteBoutonStyle)
         layoutBoutons.addWidget(self.boutSuite)
         # espacement au dessus des boutons
         spacer = QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -126,9 +141,14 @@ class FrameDroiteHaute(QWidget):
         self.nbreRepExactes=0 
         layoutImages.addWidget(self.nbreRep)
         layoutDroitHaut.addLayout(layoutImages)
-
         layoutDroitHaut.addSpacing(10)
-        
+        # Ligne horizontale continue
+        ligne = QFrame()
+        ligne.setFrameShape(QFrame.HLine)
+        ligne.setFrameShadow(QFrame.Plain)
+        ligne.setLineWidth(1)
+        ligne.setStyleSheet("color: black;")
+        layoutDroitHaut.addWidget(ligne)
         self.setLayout(layoutDroitHaut)
         self.show()
         
