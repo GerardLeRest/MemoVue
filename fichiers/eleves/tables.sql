@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS personnes;
 
 -- Table principale : personnes
 CREATE TABLE personnes (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     prenom TEXT NOT NULL,
     nom TEXT NOT NULL,
     structure TEXT NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE personnes (
 
 -- Table des spécialités (ex-options, responsabilités, etc.)
 CREATE TABLE specialites (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     specialite TEXT NOT NULL UNIQUE
 );
 

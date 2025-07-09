@@ -13,14 +13,15 @@ import sys
 
 class FrameDroiteBasse (QWidget):
     """ Créer la partie droite basse de l'interface """
-    def __init__(self, fenetre = None):
+    def __init__(self, config, fenetre = None ):
         """Constructeur de la frame de droite et de ses éléments"""
         # constructeur de la classe parente
         super().__init__(fenetre)
-        self.listeEleves = []  # liste des élèves de la classe sélectionnée
+        self.config = config # configuration de l'interface - json
+        self.listePersonnes = []  # liste des élèves de la classe sélectionnée
         self.listeOptions = []  # liste des options des élèves de la classese
-        #self.modifier_bdd = ModifierBDD("fichiers/personnes.bdd") -faux?
-        self.modifier_bdd = ModifierBDD("eleves.db")
+        #self.modif = ModifierBDD(config, "fichiers/personnes.bdd") -faux?
+        self.modif = ModifierBDD(self.config, self.config["BaseDonnees"])
         self.optionSelectionnee = ""  # option sélectionnée
 
         layoutBasDroit = QVBoxLayout()
@@ -51,8 +52,8 @@ class FrameDroiteBasse (QWidget):
         layoutGrille = QGridLayout()
         layoutGrille.setSpacing(10)
          # labels)
-        layoutGrille.addWidget(QLabel("Structures"), 0,0)
-        layoutGrille.addWidget(QLabel("Spécialités"),0,1)
+        layoutGrille.addWidget(QLabel(self.config["Structure"]), 0,0)
+        layoutGrille.addWidget(QLabel(self.config["Specialite"]),0,1)
         ## ComboBox
         self.comboBoxGauche = QComboBox()
         self.comboBoxDroite = QComboBox()
@@ -131,8 +132,12 @@ class FrameDroiteBasse (QWidget):
         
     def liste_des_classes(self) -> list:
         """Renvoie la liste des classes de l'établissement"""
-        structures = self.modifier_bdd.listerStructures()
-        structures.insert(0,"- choisir une structure -")
+        structures = self.modif.listerStructures()
+        if self.config["Organisme"] == "Ecole":
+            phrase = "- choisir une " + self.config["Structure"] +" -"
+        else:
+            phrase = "-  choisir un " + self.config["Structure"]+" -"
+        structures.insert(0,phrase)
         return structures
 
     def configRechercher(self) -> None:
@@ -166,8 +171,8 @@ class FrameDroiteBasse (QWidget):
         classeSelectionnee = self.comboBoxGauche.currentText()
 
         # Met à jour les élèves via la BDD
-        self.modifier_bdd.personnesStructure(classeSelectionnee)
-        self.listeEleves = self.modifier_bdd.listePersonnes
+        self.modif.personnesStructure(classeSelectionnee)
+        self.listePersonnes = self.modif.listePersonnes
 
         # Crée les options présentes uniquement dans cette classe
         self.listeOptions = self.creerOptions()
@@ -178,7 +183,7 @@ class FrameDroiteBasse (QWidget):
     def creerOptions(self) -> list:
         """Créer la liste des options présentes uniquement dans la classe sélectionnée"""
         listeOptions = []
-        for eleve in self.listeEleves:
+        for eleve in self.listePersonnes:
             options = eleve[3]  # Index 2 = liste des options (ex: ['ALL2', 'CAM'])
             for option in options:
                 if option not in listeOptions:
@@ -207,6 +212,14 @@ class FrameDroiteBasse (QWidget):
 if __name__ == '__main__':
    
     app = QApplication(sys.argv)
-    fenetre = FrameDroiteBasse()
+    config = {
+    "Organisme": "Entreprise",
+    "Structure": "Département",
+    "Personne": "Salarié",
+    "Specialite": "Fonctions",
+    "BaseDonnees": "salaries.db",
+    "CheminPhotos": "photos/salaries/"
+    }
+    fenetre = FrameDroiteBasse(config=config)
     fenetre.show()
     app.exec()

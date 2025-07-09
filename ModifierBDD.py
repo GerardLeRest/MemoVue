@@ -2,7 +2,8 @@ import sqlite3
 
 class ModifierBDD:
     """Manipulation de la BDD"""
-    def __init__(self, cheminFichier):
+    def __init__(self, config, cheminFichier):
+        self.config = config # configuration de l'interface - json
         self.cheminFichier = cheminFichier
         self.conn = sqlite3.connect(self.cheminFichier)
         self.curs = self.conn.cursor()
@@ -16,7 +17,7 @@ class ModifierBDD:
 
 
     def chargerPersonnesEtStructures(self):
-        """Charge toutes les personnes et les organise par structure"""
+        """Charge toutes les personnes et les personnes par structure"""
         self.listesPersonnes.clear()
         self.personnesParStructure.clear()
 
@@ -45,7 +46,8 @@ class ModifierBDD:
 
     def personnesStructure(self, structureNom):
         """Filtrer les personnes d’une structure spécifique"""
-        self.listePersonnes = self.personnesParStructure.get(structureNom, []).copy()
+        self.listePersonnes = self.personnesParStructure.get(structureNom, []).copy()       
+        pass
 
     def listerStructures(self):
         """Retourne la liste des noms de structures"""
@@ -57,5 +59,13 @@ class ModifierBDD:
 
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
-    bdd = ModifierBDD("eleves.db")
-    bdd.chargerPersonnesEtStructures()
+    config = {
+    "Organisme": "Entreprise",
+    "Structure": "Département",
+    "Personne": "Salarié",
+    "Specialite": "Fonctions",
+    "BaseDonnees": "salaries.db",
+    "CheminPhotos": "photos/salaries/"
+    }
+    modifier_bdd = ModifierBDD(config, config["BaseDonnees"])
+    print(modifier_bdd.listerStructures())

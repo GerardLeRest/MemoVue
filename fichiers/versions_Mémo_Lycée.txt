@@ -49,7 +49,7 @@ Mémo_Élèves
 
 * version 0.34
 - utilise liste_eleves.py: utilise directement le nom des photos pour générer les listes d'élèves
-- bug linux: repertoire_racine=os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
+- bug linux: repertoireRacine=os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
 
 * version 0.35
 - joue "we are the champion" si succès au test et "la marche funèbre" si 0 réponse de bonne

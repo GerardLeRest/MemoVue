@@ -18,20 +18,24 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QPixmap, QAction
 import sys
 
-repertoire_racine = os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
+repertoireRacine = os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
 
 class Fenetre(QMainWindow):
     """ Créer l'interface graphique et lier les diffentes classes entre elles"""
     
-    def __init__(self):
+    def __init__(self, config):
         super().__init__()   # constructeur de la classe parente
+        # configuration de l'application (Ecole-Entreprise-Parlement)
+        # voir tableaux JSON 
+        self.config= config
         self.setWindowTitle("MemoVue")  # Titre de la fenêtre
         self.setMaximumSize(self.width(), self.height()) # empêchement d'aggranissement de la fenêtre
         
         # Création des 3 frames
-        self.FrameDrBa = FrameDroiteBasse(self)
-        self.FrameDrHa = FrameDroiteHaute(self)
-        self.FrameG = FrameGauche(self, self.FrameDrBa.listeEleves)
+        self.FrameDrBa = FrameDroiteBasse(config, self)
+        self.FrameDrHa = FrameDroiteHaute(self.config,self)
+        self.FrameG = FrameGauche(self.FrameDrBa.listePersonnes, self, self.config)
+        self.modifierBDD = ModifierBDD (config, config["BaseDonnees"])
 
         # Créer un widget central et y appliquer le layout principal
         widget_central = QWidget()
@@ -51,20 +55,33 @@ class Fenetre(QMainWindow):
         self.FrameDrHa.prenomEntry.returnPressed.connect(self.validerRepNom)
         self.FrameDrHa.nomEntry.returnPressed.connect(self.verifierRechercher)
 
-        # Menu Aide
-        menu_bar = self.menuBar()
-        menu_aide = QMenu("Menu", self)
-        menu_bar.addMenu(menu_aide)
-        # Licence
+        self.show()
+
+        # menu
+        menuBar = self.menuBar()
+        menuPrincipal = QMenu("Menu", self)
+        menuBar.addMenu(menuPrincipal)
+
         actionLicence = QAction("Licence GPL-v3", self)
         actionLicence.triggered.connect(self.afficherLicence)
-        menu_aide.addAction(actionLicence)
-        # Quitter
-        action_quitter = QAction("Quitter", self)
-        action_quitter.triggered.connect(self.quitter)
-        menu_aide.addAction(action_quitter)
+
+        actionChangerOrganisme = QAction("Changer d’organisme", self)
+        actionChangerOrganisme.triggered.connect(self.changerOrganisme)
+
+        actionQuitter = QAction("Quitter", self)
+        actionQuitter.triggered.connect(self.quitter)
+
+        menuPrincipal.addAction(actionLicence)
+        menuPrincipal.addAction(actionChangerOrganisme)
+        menuPrincipal.addAction(actionQuitter)
+
+    def changerOrganisme(self):
+        """Changer d'organisme"""
+        self.close()
+        from ChoixOrganisme import ChoixOrganisme
+        self.boiteAccueil = ChoixOrganisme()
+        self.boiteAccueil.show()
                 
-        self.show()
        
     def configurer(self) -> None:
         """ configurer l'application"""
@@ -96,36 +113,35 @@ class Fenetre(QMainWindow):
             
     def configAutresModes(self) -> None:
         self.FrameDrBa.choisirOption()  # ⚠️ force la mise à jour
-        self.FrameG.listeEleves = copy.deepcopy(self.FrameDrBa.listeEleves)
+        self.FrameG.listePersonnes = copy.deepcopy(self.FrameDrBa.listePersonnes)
 
         # Filtrage par option choisie
         if self.FrameDrBa.optionSelectionnee != "TOUS":
             self.enleverEleves()
         
-        self.FrameG.nbreElev = len(self.FrameG.listeEleves)
+        self.FrameG.nbrePers = len(self.FrameG.listePersonnes)
         self.FrameG.rang = 0
-        self.FrameG.numOrdreElev.setText(f"{self.FrameG.rang // 2 + 1}/{self.FrameG.nbreElev}")
+        self.FrameG.numOrdreElev.setText(f"{self.FrameG.rang // 2 + 1}/{self.FrameG.nbrePers}")
         self.FrameDrHa.DesAffichRep()
         if self.FrameDrBa.checkBox.isChecked():
-            random.shuffle(self.FrameG.listeEleves)
+            random.shuffle(self.FrameG.listePersonnes)
         if self.FrameDrBa.boutonRadioBas2.isChecked():  # Prénom seul
-            self.effacerNomsOuPrenoms(self.FrameG.listeEleves, 1)
+            self.effacerNomsOuPrenoms(self.FrameG.listePersonnes, 1)
         if self.FrameDrBa.boutonRadioBas3.isChecked():  # Nom seul
-            self.effacerNomsOuPrenoms(self.FrameG.listeEleves, 0)
+            self.effacerNomsOuPrenoms(self.FrameG.listePersonnes, 0)
         if self.FrameDrBa.boutonRadioHaut2.isChecked():  # Test oral
-            self.ajouterBlancsListes(self.FrameG.listeEleves)
+            self.ajouterBlancsListes(self.FrameG.listePersonnes)
         if self.FrameDrBa.boutonRadioHaut3.isChecked():  # Test écrit
-            self.ajouterBlancsListes(self.FrameG.listeEleves)
+            self.ajouterBlancsListes(self.FrameG.listePersonnes)
             self.FrameDrHa.configTestEcrit()
             self.configTestEcrit()
         else:
             self.configApprentissageTestOral()
-        print(f"==> rang = {self.FrameG.rang}, taille = {len(self.FrameG.listeEleves)}")
-        if self.FrameG.listeEleves and all(len(eleve) >= 4 for eleve in self.FrameG.listeEleves):
+        print(f"==> rang = {self.FrameG.rang}, taille = {len(self.FrameG.listePersonnes)}")
+        if self.FrameG.listePersonnes and all(len(personne) >= 4 for personne in self.FrameG.listePersonnes):
             self.FrameG.maj()
         else:
             print("Données incomplètes ou non chargées, affichage annulé.")
-
 
     def configTestEcrit(self) -> None:
         """Configurer le mode Test Écrit"""
@@ -145,7 +161,7 @@ class Fenetre(QMainWindow):
     def actDesBoutFrameG(self) -> None:
         """ activer ou désactiver les boutons de la frame de gauche"""
         # activer les boutons frame gauche si la liste des élèves n'est pas vide
-        if len(self.FrameG.listeEleves)>1:
+        if len(self.FrameG.listePersonnes)>1:
             for i in range(len(icones)):
                 self.FrameG.boutons[i].setEnabled(True) 
         else:
@@ -161,8 +177,8 @@ class Fenetre(QMainWindow):
 
     def enleverEleves(self) -> None:
         """enlever les élèves ne faisant pas l'option sélectionnée"""
-        self.FrameG.listeEleves = [
-            eleve for eleve in self.FrameG.listeEleves
+        self.FrameG.listePersonnes = [
+            eleve for eleve in self.FrameG.listePersonnes
             if self.FrameDrBa.optionSelectionnee in eleve[3]
         ]
     
@@ -206,8 +222,8 @@ class Fenetre(QMainWindow):
         prenom = self.FrameDrHa.prenomEntry.text()
 
         # Réponses attendues
-        nomAttendu = self.FrameG.listeEleves[self.FrameG.rang + 1][1]
-        prenomAttendu = self.FrameG.listeEleves[self.FrameG.rang + 1][0]
+        nomAttendu = self.FrameG.listePersonnes[self.FrameG.rang + 1][1]
+        prenomAttendu = self.FrameG.listePersonnes[self.FrameG.rang + 1][0]
 
         mode = self.FrameDrBa.groupeBas.checkedButton().text() 
         match = True
@@ -220,7 +236,7 @@ class Fenetre(QMainWindow):
 
         # Affichage des icones
         icone = "check.png" if match else "cross.png"
-        image = QPixmap(os.path.join(repertoire_racine, "fichiers", "icones", icone))
+        image = QPixmap(os.path.join(repertoireRacine, "fichiers", "icones", icone))
         self.FrameDrHa.labelImageGauche.setPixmap(image)
    
         if match:
@@ -232,7 +248,7 @@ class Fenetre(QMainWindow):
 
         # Avancer dans la liste
         self.FrameG.rang += 1
-        if self.FrameG.rang > len(self.FrameG.listeEleves) - 2:
+        if self.FrameG.rang > len(self.FrameG.listePersonnes) - 2:
             self.FrameDrHa.desFrameDrHa()
         else:
             self.FrameG.majNomPrenom()
@@ -246,24 +262,24 @@ class Fenetre(QMainWindow):
         """voir la réponse et passer à l'élève suivant"""
         if self.FrameDrBa.boutonRadioHaut3.isChecked(): #Test écrit
             self.FrameDrHa.effacerReponses()
-            if (self.FrameG.rang >= len(self.FrameG.listeEleves)-1):
+            if (self.FrameG.rang >= len(self.FrameG.listePersonnes)-1):
                 pass
             else:
                 self.FrameG.rang=self.FrameG.rang+1
             # avancer
-            if (self.FrameG.rang<len(self.FrameG.listeEleves)):
+            if (self.FrameG.rang<len(self.FrameG.listePersonnes)):
                 #réactivation des boutons
                 self.FrameDrHa.boutVal.setEnabled(True)
                 self.FrameDrHa.boutEff.setEnabled(True)
                 # maj bonnes réponses
                 self.FrameDrHa.nbreRep.setText(str(self.FrameDrHa.nbreRepExactes)+"/"+str(self.FrameG.rang//2+1))
                 # N° de l'élève en cours
-                self.FrameG.numOrdreElev.setText(str(self.FrameG.rang//2+1)+"/"+str(self.FrameG.nbreElev))
+                self.FrameG.numOrdreElev.setText(str(self.FrameG.rang//2+1)+"/"+str(self.FrameG.nbrePers))
                 # maj des noms te des prénoms
                 self.FrameG.majNomPrenom()
                 self.FrameG.majClasseOptions()
                 # activation/désactivation des zones de saisie
-                if (self.FrameG.listeEleves[self.FrameG.rang][1]=="???") or (self.FrameG.listeEleves[self.FrameG.rang][0]=="???"):
+                if (self.FrameG.listePersonnes[self.FrameG.rang][1]=="???") or (self.FrameG.listePersonnes[self.FrameG.rang][0]=="???"):
                     self.actDesZonesSaisies() #activer/désactiver zones de saisie
                 else:
                     self.FrameDrHa.prenomEntry.setEnabled(False)
@@ -272,7 +288,7 @@ class Fenetre(QMainWindow):
                     self.FrameDrHa.boutEff.setEnabled(False)
                 # maj des photos
                 self.FrameG.majPhoto()
-                if (self.FrameG.rang==len(self.FrameG.listeEleves)-1):
+                if (self.FrameG.rang==len(self.FrameG.listePersonnes)-1):
                     self.FrameDrHa.desFrameDrHa()
         else:
             pass
@@ -280,7 +296,7 @@ class Fenetre(QMainWindow):
     def rechercher(self):
         """Rechercher un ou plusieurs élèves dans tout l'établissement selon le nom, prénom ou les deux"""
 
-        self.FrameG.listeEleves = []
+        self.FrameG.listePersonnes = []
         self.FrameG.rang = 0
 
         # Lecture des champs et mise en forme
@@ -289,10 +305,10 @@ class Fenetre(QMainWindow):
         mode = self.FrameDrBa.groupeBas.checkedButton().text()
 
         # Boucle sur tous les élèves de l'établissement
-        for eleve in self.FrameDrBa.modifier_bdd.listesPersonnes:
+        for eleve in self.modifierBDD.listesPersonnes:
             prenom_eleve = eleve[0].lower().strip()
             nom_eleve = eleve[1].lower().strip()
-
+            # conditions               
             if mode == "Prenom":
                 condition = (prenom == prenom_eleve)
             elif mode == "Nom":
@@ -301,19 +317,19 @@ class Fenetre(QMainWindow):
                 condition = (prenom == prenom_eleve and nom == nom_eleve)
 
             if condition:
-                self.FrameG.listeEleves.append(eleve)
+                self.FrameG.listePersonnes.append(eleve)
 
         # Après avoir collecté tous les résultats, mise à jour
-        self.FrameG.nbreElev = len(self.FrameG.listeEleves)
+        self.FrameG.nbrePers = len(self.FrameG.listePersonnes)
 
-        if self.FrameG.nbreElev > 0:
+        if self.FrameG.nbrePers > 0:
             self.FrameG.rang = 0
-            self.FrameG.numOrdreElev.setText(f"1/{self.FrameG.nbreElev}")
+            self.FrameG.numOrdreElev.setText(f"1/{self.FrameG.nbrePers}")
             self.FrameG.majNomPrenom()
             self.FrameG.majClasseOptions()
             self.FrameG.majPhoto()
             # activation/désactivation boutons sous image - rechercher
-            if self.FrameG.nbreElev<=1:
+            if self.FrameG.nbrePers<=1:
                 for bouton in self.FrameG.boutons:
                     bouton.setEnabled(False)
             else:
@@ -357,6 +373,13 @@ class Fenetre(QMainWindow):
 if __name__ == '__main__':
     
     app = QApplication(sys.argv)
-    fenetre = Fenetre()
+    config = {
+        "Organisme": "entreprise",
+        "Structure": "Départements",
+        "Specialite": "Compétences",
+        "BaseDonnees": "salaries.db",
+        "CheminPhotos": "photos_entreprise"
+    }
+    fenetre = Fenetre(config)
     fenetre.show()
     app.exec()

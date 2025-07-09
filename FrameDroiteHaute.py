@@ -11,14 +11,15 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEd
 from PySide6.QtGui import QPixmap
 import os, sys
 
-repertoire_racine=os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
+repertoireRacine=os.path.dirname(os.path.abspath(__file__)) # répetoire du fichier pyw
 
 class FrameDroiteHaute(QWidget):
     """ Créer la partie droite haute de l'interface """
         
-    def __init__(self, fenetre = None):
+    def __init__(self, config, fenetre = None):
         """Constructeur de la frame de droite et de ses éléments"""
         super().__init__(fenetre)  # ← Important 
+        self.config = config # configuration de l'interface - json
         # layout de la classe
         layoutDroitHaut = QVBoxLayout()        
 
@@ -130,7 +131,7 @@ class FrameDroiteHaute(QWidget):
         layoutImages = QHBoxLayout()
         # image de validation chexk ou cross)
         self.labelImageGauche = QLabel()
-        self.image = QPixmap(repertoire_racine+os.sep+"fichiers"+os.sep+"icones"+os.sep+"transparent.png")
+        self.image = QPixmap(repertoireRacine+os.sep+"fichiers"+os.sep+"icones"+os.sep+"transparent.png")
         self.labelImageGauche.setPixmap(self.image) 
         layoutImages.addWidget(self.labelImageGauche)
         # espace entre l'image et le compteur de bonnes réponses
@@ -189,7 +190,7 @@ class FrameDroiteHaute(QWidget):
         self.nomEntry.setEnabled(True)
         self.nomEntry.clear()
         # effacer icone
-        self.image = QPixmap(repertoire_racine+os.sep+"fichiers"+os.sep+"icones"+os.sep+"transparent.png")
+        self.image = QPixmap(repertoireRacine+os.sep+"fichiers"+os.sep+"icones"+os.sep+"transparent.png")
         self.labelImageGauche.setPixmap(self.image) 
         # désactiver - Nbres bonne réponse  
         self.nbreRep.setEnabled(False) 

@@ -1,0 +1,9 @@
+{
+  "Organisme": "Parlement",
+  "Structure": "Parti",
+  "Personne": "Député",
+  "Specialite": "Commissions",
+  "BaseDonnees": "deputes.db",
+  "CheminPhotos": "photos/deputes/"
+}
+

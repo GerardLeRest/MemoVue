@@ -1,15 +1,15 @@
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QRadioButton,
-    QPushButton, QSpacerItem, QSizePolicy
+    QPushButton, QSpacerItem, QSizePolicy, QMessageBox
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 import sys
 import json
-# from MemoVue import *  # à activer ensuite
+from MemoVue import Fenetre  # Importer la classe MemoVue
 
 class ChoixOrganisme(QWidget):
-    """Choisir l'organisme - Parlement - Établissement scolaire - Entreprise"""
+    """Choisir l'organisme - Parlement - École - Entreprise"""
 
     def __init__(self):
         super().__init__()
@@ -26,7 +26,7 @@ class ChoixOrganisme(QWidget):
         label.setStyleSheet("""
             color: #2F4F4F;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 20px;
         """)
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
@@ -34,12 +34,12 @@ class ChoixOrganisme(QWidget):
         layout.addSpacing(10)
 
         # Boutons radios
-        self.radioScolaire = QRadioButton("Établissement scolaire")
+        self.radioEcole = QRadioButton("Ecole")
         self.radioEntreprise = QRadioButton("Entreprise")
         self.radioParlement = QRadioButton("Parlement")
 
-        for radio in [self.radioScolaire, self.radioEntreprise, self.radioParlement]:
-            radio.setStyleSheet("font-size: 13px; margin: 2px 0;")
+        for radio in [self.radioEcole, self.radioEntreprise, self.radioParlement]:
+            radio.setStyleSheet("font-size: 18px; margin: 2px 0;")
             layout.addWidget(radio)
 
         layout.addSpacing(15)
@@ -77,28 +77,26 @@ class ChoixOrganisme(QWidget):
 
     def lancerMemoVue(self):
         "lancement de la classe MemoVue"
-        if self.radioScolaire.isChecked():
-            fichier = "configScolaire.json"
+        if self.radioEcole.isChecked():
+            fichier = "ConfigEcole.json"
         elif self.radioEntreprise.isChecked():
-            fichier = "configEntreprise.json"
+            fichier = "ConfigEntreprise.json"
         elif self.radioParlement.isChecked():
-            fichier = "configParlement.json"
+            fichier = "ConfigParlement.json"
         else:
             fichier = None
         try:
             with open(fichier, "r", encoding="utf-8") as f:
                 config = json.load(f)
         except Exception as e:
-            print("Erreur :", e)
-            config = {"Categorie": "-", "Specialite": "-"}
+            print(f"Erreur lors du chargement du fichier : {e}")
+            return
 
-        # self.memoVue = MemoVue(config=config)
-        # self.memoVue.show()
-        # self.close()
+        self.memoVue = Fenetre(config=config)
+        self.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     fenetre = ChoixOrganisme()
     fenetre.show()
     app.exec()
-
