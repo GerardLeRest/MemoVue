@@ -19,10 +19,10 @@ class FrameDroiteBasse (QWidget):
         super().__init__(fenetre)
         self.config = config # configuration de l'interface - json
         self.listePersonnes = []  # liste des élèves de la classe sélectionnée
-        self.listeOptions = []  # liste des options des élèves de la classese
+        self.listeSpecialites = []  # liste des options des élèves de la classese
         #self.modif = ModifierBDD(config, "fichiers/personnes.bdd") -faux?
         self.modif = ModifierBDD(self.config, self.config["BaseDonnees"])
-        self.optionSelectionnee = ""  # option sélectionnée
+        self.specialiteSelectionnee = ""  # option sélectionnée
 
         layoutBasDroit = QVBoxLayout()
         layoutBasDroit.setSpacing(10)
@@ -62,9 +62,9 @@ class FrameDroiteBasse (QWidget):
         layoutBasDroit.addLayout(layoutGrille)
 
         # création de la liste des classes
-        classesRangees = sorted(self.liste_des_classes())  # crée une nouvelle liste triée
+        classesRangees = sorted(self.listeDesStructures())  # crée une nouvelle liste triée
         self.comboBoxGauche.addItems(classesRangees)
-        self.comboBoxGauche.currentTextChanged.connect(self.choisir_classe_options)
+        self.comboBoxGauche.currentTextChanged.connect(self.choisirStructureSpecialites)
         
         # checkbutton Aléatoite
         layoutCheckBox = QHBoxLayout()
@@ -123,15 +123,15 @@ class FrameDroiteBasse (QWidget):
         layoutBasDroit.addSpacing(10)  # petit espace avant le bouton
         layoutBasDroit.addLayout(layoutBouton)
         # créer la liste des options
-        self.creerComboOptions()
+        self.creerComboSpecialites()
 
     # ancrer le layout principal à la fenêtre
         self.setLayout(layoutBasDroit)
 
         self.show()
         
-    def liste_des_classes(self) -> list:
-        """Renvoie la liste des classes de l'établissement"""
+    def listeDesStructures(self) -> list:
+        """Renvoie la liste des structures de l'organisme"""
         structures = self.modif.listerStructures()
         if self.config["Organisme"] == "Ecole":
             phrase = "- choisir une " + self.config["Structure"] +" -"
@@ -166,46 +166,43 @@ class FrameDroiteBasse (QWidget):
         """Définir l'ordre de défilement"""
         self.ordreAleatoire = self.checkBox.isChecked() 
 
-    def choisir_classe_options(self, event=None) -> None:
-        """Choisir la classe et mettre à jour les élèves et les options"""
-        classeSelectionnee = self.comboBoxGauche.currentText()
-
-        # Met à jour les élèves via la BDD
-        self.modif.personnesStructure(classeSelectionnee)
-        self.listePersonnes = self.modif.listePersonnes
+    def choisirStructureSpecialites(self) -> None:
+        """Choisir la structure et mettre à jour les personnes et les spécialités"""
+        structureChoisie = self.comboBoxGauche.currentText()
+        self.listePersonnes = self.modif.personnesStructure(structureChoisie)
 
         # Crée les options présentes uniquement dans cette classe
-        self.listeOptions = self.creerOptions()
+        self.listeSpecialites = self.creerSpecialites()
 
-        # Met à jour la combobox des options
-        self.creerComboOptions()
+        # Met à jour la combobox des options (ligne à garder si elle suit)
+        self.creerComboSpecialites()
 
-    def creerOptions(self) -> list:
-        """Créer la liste des options présentes uniquement dans la classe sélectionnée"""
-        listeOptions = []
+    def creerSpecialites(self) -> list:
+        """Créer la liste des spécialités présentes uniquement dans la classe sélectionnée"""
+        listeSpecialites = []
         for eleve in self.listePersonnes:
             options = eleve[3]  # Index 2 = liste des options (ex: ['ALL2', 'CAM'])
             for option in options:
-                if option not in listeOptions:
-                    listeOptions.append(option)
-        listeOptions = sorted(listeOptions)
-        listeOptions.insert(0, "TOUS")
-        self.listeOptions = listeOptions
-        return listeOptions
+                if option not in listeSpecialites:
+                    listeSpecialites.append(option)
+        listeSpecialites = sorted(listeSpecialites)
+        listeSpecialites.insert(0, "TOUS")
+        self.listeSpecialites = listeSpecialites
+        return listeSpecialites
     
-    def creerComboOptions(self) -> None:
-        """Créer la liste déroulante des options sans déclencher d'événement parasite"""
+    def creerComboSpecialites(self) -> None:
+        """Créer la liste déroulante des spécialités sans déclencher d'événement parasite"""
         #self.comboBoxDroite.blockSignals(True)  # Empêche les signaux lors de la modification
         self.comboBoxDroite.clear()
-        self.comboBoxDroite.addItems(self.listeOptions)
+        self.comboBoxDroite.addItems(self.listeSpecialites)
         self.comboBoxDroite.setCurrentIndex(0)  # Facultatif : force "TOUS" si besoin
         #self.comboBoxDroite.blockSignals(False)
-        self.comboBoxDroite.currentTextChanged.connect(self.choisirOption)
+        self.comboBoxDroite.currentTextChanged.connect(self.choisirSpecialite)
 
-    def choisirOption(self, event=None) -> None:
+    def choisirSpecialite(self) -> None:
         """Sélectionner une option"""
-        self.optionSelectionnee = self.comboBoxDroite.currentText()
-        print("Option sélectionnée :", self.optionSelectionnee)
+        self.specialiteSelectionnee = self.comboBoxDroite.currentText()
+        print("Spécillité sélectionnée :", self.specialiteSelectionnee)
 
 # ----------------------------------------------------
 

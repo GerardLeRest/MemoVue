@@ -3,23 +3,19 @@ import sqlite3
 class ModifierBDD:
     """Manipulation de la BDD"""
     def __init__(self, config, cheminFichier):
-        self.config = config # configuration de l'interface - json
+        self.config = config  # configuration de l'interface - json
         self.cheminFichier = cheminFichier
         self.conn = sqlite3.connect(self.cheminFichier)
         self.curs = self.conn.cursor()
         self.curs.execute("PRAGMA foreign_keys=on;")
 
-        self.listesPersonnes = []          # Toutes les personnes de la BDD
-        self.listePersonnes = []           # Personnes filtrées
-        self.personnesParStructure = {}    # Trie par structure (anciennement "classe")
+        self.listesPersonnes = []  # Toutes les personnes de la BDD
 
-        self.chargerPersonnesEtStructures()
+        self.chargerPersonnes()
 
-
-    def chargerPersonnesEtStructures(self):
-        """Charge toutes les personnes et les personnes par structure"""
+    def chargerPersonnes(self):
+        """Charge toutes les personnes depuis la BDD"""
         self.listesPersonnes.clear()
-        self.personnesParStructure.clear()
 
         self.curs.execute('''
             SELECT 
@@ -35,24 +31,21 @@ class ModifierBDD:
         ''')
 
         for prenom, nom, structure, optionsStr, photo in self.curs.fetchall():
-            listeOptions = optionsStr.split(', ') if optionsStr else []
-            personne = [prenom, nom, structure, listeOptions, photo]
-
+            listeSpecialites = optionsStr.split(', ') if optionsStr else []
+            personne = [prenom, nom, structure, listeSpecialites, photo]
             self.listesPersonnes.append(personne)
 
-            if structure not in self.personnesParStructure:
-                self.personnesParStructure[structure] = []
-            self.personnesParStructure[structure].append(personne)
+    def listerStructures(self):
+        """Retourne la liste des noms de structures uniques"""
+        return sorted(set(personne[2] for personne in self.listesPersonnes))
 
     def personnesStructure(self, structureNom):
-        """Filtrer les personnes d’une structure spécifique"""
-        self.listePersonnes = self.personnesParStructure.get(structureNom, []).copy()       
-        pass
-
-    def listerStructures(self):
-        """Retourne la liste des noms de structures"""
-        return list(self.personnesParStructure.keys())
-
+        """Retourne les personnes d’une structure spécifique"""
+        return [
+            personne for personne in self.listesPersonnes
+            if personne[2] == structureNom
+        ]
+    
     def fermerConnexion(self):
         self.conn.close()
 
@@ -60,12 +53,13 @@ class ModifierBDD:
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
     config = {
-    "Organisme": "Entreprise",
-    "Structure": "Département",
-    "Personne": "Salarié",
-    "Specialite": "Fonctions",
-    "BaseDonnees": "salaries.db",
-    "CheminPhotos": "photos/salaries/"
+        "Organisme": "Entreprise",
+        "Structure": "Département",
+        "Personne": "Salarié",
+        "Specialite": "Fonctions",
+        "BaseDonnees": "salaries.db",
+        "CheminPhotos": "photos/salaries/"
     }
     modifier_bdd = ModifierBDD(config, config["BaseDonnees"])
     print(modifier_bdd.listerStructures())
+

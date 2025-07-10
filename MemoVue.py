@@ -62,11 +62,11 @@ class Fenetre(QMainWindow):
         menuPrincipal = QMenu("Menu", self)
         menuBar.addMenu(menuPrincipal)
 
-        actionLicence = QAction("Licence GPL-v3", self)
-        actionLicence.triggered.connect(self.afficherLicence)
-
         actionChangerOrganisme = QAction("Changer d’organisme", self)
         actionChangerOrganisme.triggered.connect(self.changerOrganisme)
+
+        actionLicence = QAction("Licence GPL-v3", self)
+        actionLicence.triggered.connect(self.afficherLicence)
 
         actionQuitter = QAction("Quitter", self)
         actionQuitter.triggered.connect(self.quitter)
@@ -82,7 +82,6 @@ class Fenetre(QMainWindow):
         self.boiteAccueil = ChoixOrganisme()
         self.boiteAccueil.show()
                 
-       
     def configurer(self) -> None:
         """ configurer l'application"""
         self.FrameDrHa.effacerReponses()
@@ -98,30 +97,34 @@ class Fenetre(QMainWindow):
         
         if self.FrameDrBa.boutonRadioBas2.isChecked():  # prénom seul
             self.FrameDrHa.nomEntry.setEnabled(False)
+            self.FrameDrHa.nomEntry.setPlaceholderText("")
             self.FrameDrHa.prenomEntry.setEnabled(True)
             self.FrameDrHa.prenomEntry.setFocus()
             
         elif self.FrameDrBa.boutonRadioBas3.isChecked():  # nom seul
             self.FrameDrHa.prenomEntry.setEnabled(False)
+            self.FrameDrHa.prenomEntry.setPlaceholderText("")
             self.FrameDrHa.nomEntry.setEnabled(True)
             self.FrameDrHa.nomEntry.setFocus()
            
         else:  # nom + prénom
             self.FrameDrHa.prenomEntry.setEnabled(True)
             self.FrameDrHa.nomEntry.setEnabled(True)
+            self.FrameDrHa.prenomEntry.setPlaceholderText("ndiquez votre nom")
+            self.FrameDrHa.nomEntry.setPlaceholderText("ndiquez votre nom")
             self.FrameDrHa.prenomEntry.setFocus()
             
     def configAutresModes(self) -> None:
-        self.FrameDrBa.choisirOption()  # ⚠️ force la mise à jour
+        self.FrameDrBa.choisirSpecialite()
         self.FrameG.listePersonnes = copy.deepcopy(self.FrameDrBa.listePersonnes)
 
         # Filtrage par option choisie
-        if self.FrameDrBa.optionSelectionnee != "TOUS":
-            self.enleverEleves()
+        if self.FrameDrBa.specialiteSelectionnee != "TOUS":
+            self.enleverPersonnes()
         
         self.FrameG.nbrePers = len(self.FrameG.listePersonnes)
         self.FrameG.rang = 0
-        self.FrameG.numOrdreElev.setText(f"{self.FrameG.rang // 2 + 1}/{self.FrameG.nbrePers}")
+        self.FrameG.numOrdrePers.setText(f"{self.FrameG.rang // 2 + 1}/{self.FrameG.nbrePers}")
         self.FrameDrHa.DesAffichRep()
         if self.FrameDrBa.checkBox.isChecked():
             random.shuffle(self.FrameG.listePersonnes)
@@ -175,14 +178,14 @@ class Fenetre(QMainWindow):
             self.FrameDrHa.effacerReponses()
             self.actDesZonesSaisies()
 
-    def enleverEleves(self) -> None:
-        """enlever les élèves ne faisant pas l'option sélectionnée"""
+    def enleverPersonnes(self) -> None:
+        """enlever les personnes ne faisant pas la spécialité sélectionnée"""
         self.FrameG.listePersonnes = [
-            eleve for eleve in self.FrameG.listePersonnes
-            if self.FrameDrBa.optionSelectionnee in eleve[3]
+            personne for personne in self.FrameG.listePersonnes
+            if self.FrameDrBa.specialiteSelectionnee in personne[3]
         ]
     
-    def effacerNomsOuPrenoms(self,liste ,rang: int):
+    def effacerNomsOuPrenoms(self,liste: list ,rang: int):
         """effacer les noms ou les prénoms"""
         for i in range(len(liste)):
                 liste[i][rang]=" "
@@ -259,7 +262,7 @@ class Fenetre(QMainWindow):
             self.FrameDrHa.prenomEntry.setEnabled(False)
 
     def AllerALaSuite(self,event) -> None:
-        """voir la réponse et passer à l'élève suivant"""
+        """voir la réponse et passer à la personne suivant"""
         if self.FrameDrBa.boutonRadioHaut3.isChecked(): #Test écrit
             self.FrameDrHa.effacerReponses()
             if (self.FrameG.rang >= len(self.FrameG.listePersonnes)-1):
@@ -274,7 +277,7 @@ class Fenetre(QMainWindow):
                 # maj bonnes réponses
                 self.FrameDrHa.nbreRep.setText(str(self.FrameDrHa.nbreRepExactes)+"/"+str(self.FrameG.rang//2+1))
                 # N° de l'élève en cours
-                self.FrameG.numOrdreElev.setText(str(self.FrameG.rang//2+1)+"/"+str(self.FrameG.nbrePers))
+                self.FrameG.numOrdrePers.setText(str(self.FrameG.rang//2+1)+"/"+str(self.FrameG.nbrePers))
                 # maj des noms te des prénoms
                 self.FrameG.majNomPrenom()
                 self.FrameG.majClasseOptions()
@@ -294,7 +297,7 @@ class Fenetre(QMainWindow):
             pass
     
     def rechercher(self):
-        """Rechercher un ou plusieurs élèves dans tout l'établissement selon le nom, prénom ou les deux"""
+        """Rechercher un ou plusieurs personnes dans tout l'organisme selon le nom, prénom ou les deux"""
 
         self.FrameG.listePersonnes = []
         self.FrameG.rang = 0
@@ -324,7 +327,7 @@ class Fenetre(QMainWindow):
 
         if self.FrameG.nbrePers > 0:
             self.FrameG.rang = 0
-            self.FrameG.numOrdreElev.setText(f"1/{self.FrameG.nbrePers}")
+            self.FrameG.numOrdrePers.setText(f"1/{self.FrameG.nbrePers}")
             self.FrameG.majNomPrenom()
             self.FrameG.majClasseOptions()
             self.FrameG.majPhoto()
@@ -336,8 +339,8 @@ class Fenetre(QMainWindow):
                 for bouton in self.FrameG.boutons:
                     bouton.setEnabled(True)
         else:
-            self.FrameG.numOrdreElev.setText("0/0")
-            QMessageBox.information(self, "Aucun résultat", "Aucun élève trouvé.")
+            self.FrameG.numOrdrePers.setText("0/0")
+            QMessageBox.information(self, "Aucun résultat", "Aucune personne trouvée.")
 
 
     def validerRepNom(self):

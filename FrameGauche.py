@@ -58,7 +58,6 @@ class FrameGauche (QWidget):
         self.labelImage.setFixedSize(128, 128)
         self.labelImage.setStyleSheet("border: 1px solid #666; background-color: #f0f0f0;")
         self.labelImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
         # Chargement de l'image par défaut
         cheminDefaut = os.path.join(repertoireRacine, "fichiers", "images", "inconnu.jpg")
         pixmapDefaut = QPixmap(cheminDefaut).scaled(
@@ -69,17 +68,20 @@ class FrameGauche (QWidget):
         self.labelImage.setPixmap(pixmapDefaut)
         # Puis ajout dans layout vertical principal
         layoutBoutons = QHBoxLayout()
+
+        # boutons de défilement
         fonctions = [self.accederPremier, self.accederPrecedent, self.accederSuivant, self.accederDernier]
         icones = ["Gnome-go-first.png", "Gnome-go-previous.png", "Gnome-go-next.png", "Gnome-go-last.png"]
         self.boutons = []
         for i in range(4):
             bouton = QPushButton()
-            bouton.setIcon(QIcon(repertoireRacine + os.sep + "fichiers" + os.sep + "icones" + os.sep + icones[i]))
+            bouton.setIcon(QIcon(os.path.join(repertoireRacine, "fichiers", "icones", icones[i])))
             bouton.setIconSize(QSize(24, 24))
             bouton.clicked.connect(fonctions[i])
             layoutBoutons.addWidget(bouton)
             self.boutons.append(bouton)
         layoutBoutons.setSpacing(6)  # espace horizontal entre flèches
+
         # Bloc vertical (photo + boutons), avec marges
         blocPhoto = QVBoxLayout()
         blocPhoto.setContentsMargins(10, 10, 10, 10)  # marges autour du bloc
@@ -93,16 +95,15 @@ class FrameGauche (QWidget):
         layoutMilieu.addWidget(photoWidget)
         # Ajoute à layoutGauche (comme avant)
         layoutGauche.addLayout(layoutMilieu)
-
 		
 		# layout bas
         # affichage des élèves restants
         layoutBas = QVBoxLayout()
-        self.numOrdreElev=QLabel() # permet de changer le texte du label
-        self.numOrdreElev.setText("rang/effectif ")
-        layoutBas.addWidget(self.numOrdreElev, alignment=Qt.AlignCenter)
+        self.numOrdrePers=QLabel() # rang de la Personne
+        self.numOrdrePers.setText("rang/effectif ")
+        layoutBas.addWidget(self.numOrdrePers, alignment=Qt.AlignCenter)
         # affichage de la structure 
-        self.structure=QLabel() # permet de changer le texte du label
+        self.structure=QLabel() # label de la structure
         self.structure.setText(config["Structure"])
         self.structure.setStyleSheet("color: #76aeba; font-weight: bold; font-size: 11pt;")
         layoutBas.addWidget(self.structure, alignment=Qt.AlignCenter)
@@ -151,7 +152,7 @@ class FrameGauche (QWidget):
         self.majNomPrenom()
         self.majClasseOptions()
         self.majPhoto()
-        self.majNumOrdreElev()
+        self.majnumOrdrePers()
 
     def effacer_affichage(self) -> None:
         """Effacer les informations affichées en cas de données manquantes"""
@@ -159,7 +160,7 @@ class FrameGauche (QWidget):
         self.nom.setText("-")
         self.structure.setText("-")
         self.specialites.setText("-")
-        self.numOrdreElev.setText("-")
+        self.numOrdrePers.setText("-")
         image_par_defaut = os.path.join(repertoireRacine, "fichiers", "images", "inconnu.jpg")
         self.labelImage.setPixmap(QPixmap(image_par_defaut))   
             
@@ -191,12 +192,12 @@ class FrameGauche (QWidget):
         texteOptions = "- ".join(options)
         self.specialites.setText(texteOptions)
 
-    def majNumOrdreElev(self) -> None:
+    def majnumOrdrePers(self) -> None:
         """mettre à jour le numéro d'ordre de l'élève"""
         if self.nbrePers==len(self.listePersonnes): # apprentissage
-            self.numOrdreElev.setText(str(self.rang+1)+"/"+str(self.nbrePers))
+            self.numOrdrePers.setText(str(self.rang+1)+"/"+str(self.nbrePers))
         else: # test mental
-            self.numOrdreElev.setText(str(self.rang//2+1)+"/"+str(self.nbrePers))  
+            self.numOrdrePers.setText(str(self.rang//2+1)+"/"+str(self.nbrePers))  
                 
 # ----------------------------------------------------
         

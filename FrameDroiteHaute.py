@@ -104,6 +104,8 @@ class FrameDroiteHaute(QWidget):
                 background-color: #7c8c99;
             }
         """
+
+        # boutons
         layoutBoutons = QHBoxLayout()
         # bouton valider
         self.boutVal = QPushButton ("Valider", self)
@@ -127,11 +129,11 @@ class FrameDroiteHaute(QWidget):
         self.boutEff.setEnabled(False)
         self.boutSuite.setEnabled(False)
 
-        # partie du bas - 2 images
+        # partie du bas - 2 images (réusssite à gauhe et score à droite)
         layoutImages = QHBoxLayout()
         # image de validation chexk ou cross)
         self.labelImageGauche = QLabel()
-        self.image = QPixmap(repertoireRacine+os.sep+"fichiers"+os.sep+"icones"+os.sep+"transparent.png")
+        self.image = QPixmap(os.path.join(repertoireRacine, "fichiers", "icones", "transparent.png"))
         self.labelImageGauche.setPixmap(self.image) 
         layoutImages.addWidget(self.labelImageGauche)
         # espace entre l'image et le compteur de bonnes réponses
@@ -143,6 +145,7 @@ class FrameDroiteHaute(QWidget):
         layoutImages.addWidget(self.nbreRep)
         layoutDroitHaut.addLayout(layoutImages)
         layoutDroitHaut.addSpacing(10)
+        
         # Ligne horizontale continue
         ligne = QFrame()
         ligne.setFrameShape(QFrame.HLine)

@@ -16,9 +16,10 @@ class ChoixOrganisme(QWidget):
         self.interface()
 
     def interface(self) -> None:
+        """création de l'interface"""
         self.setWindowTitle("MemoVue")
         self.setStyleSheet("background-color: white;")  # fond blanc propre
-        layout = QVBoxLayout()
+        layout = QVBoxLayout() # layout général
         layout.setContentsMargins(20, 20, 20, 20)  # marges internes propres
 
         # Titre centré
