@@ -5,6 +5,8 @@ Elle permet d’apprendre ou de retrouver les noms et prénoms de pesonnes à pa
 
 ## Fonction du projet
 
+L'interface comporte trois zones. La zone gauche donne des informations sur la personne. La zone en haut à droite permet de répondre aux questions. Et la zone en bas à droite permet d'effectuer les réglages (n'oublier pas le bouton Valider!) 
+
 L’application propose plusieurs modes d’utilisation :
 
 - **Apprentissage** : affichage des personnes et de leurs informations.
@@ -12,7 +14,9 @@ L’application propose plusieurs modes d’utilisation :
 - **Test oral** : Affichage d’une photo L’utilisateur pour chercher mentalement avant de voir la correction.
 - **Recherche** : permet de retrouver un élève à partir d’un nom ou prénom.
 
-MémoLycée permet aussi de filtrer les élèves par classe et par option, et d’intégrer des appréciations trimestrielles.
+On peut rechercher seulement les prénoms, ou seulement les noms ou les noms+prénoms
+
+MémoLycée permet aussi de filtrer les personnes par structures et spécialités.
 
 ## Installation
 
