@@ -28,7 +28,7 @@ class Fenetre(QMainWindow):
         # configuration de l'application (Ecole-Entreprise-Parlement)
         # voir tableaux JSON 
         self.config= config
-        self.setWindowTitle("MemoVue")  # Titre de la fenêtre
+        self.setWindowTitle("MemoVue - " + self.config["Organisme"])  # Titre de la fenêtre
         self.setMaximumSize(self.width(), self.height()) # empêchement d'aggranissement de la fenêtre
         
         # Création des 3 frames

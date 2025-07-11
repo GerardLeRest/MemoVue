@@ -193,7 +193,7 @@ class FrameDroiteHaute(QWidget):
         self.nomEntry.setEnabled(True)
         self.nomEntry.clear()
         # effacer icone
-        self.image = QPixmap(repertoireRacine+os.sep+"fichiers"+os.sep+"icones"+os.sep+"transparent.png")
+        self.image = QPixmap(os.path.join(repertoireRacine, "fichiers", "icones", "transparent.png"))
         self.labelImageGauche.setPixmap(self.image) 
         # désactiver - Nbres bonne réponse  
         self.nbreRep.setEnabled(False) 

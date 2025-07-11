@@ -38,6 +38,7 @@ class ChoixOrganisme(QWidget):
         self.radioEcole = QRadioButton("Ecole")
         self.radioEntreprise = QRadioButton("Entreprise")
         self.radioParlement = QRadioButton("Parlement")
+        self.radioEcole.setChecked(True) # radio s&électionné par défaut
 
         for radio in [self.radioEcole, self.radioEntreprise, self.radioParlement]:
             radio.setStyleSheet("font-size: 18px; margin: 2px 0;")
