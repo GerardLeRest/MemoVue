@@ -140,7 +140,6 @@ class Fenetre(QMainWindow):
             self.configTestEcrit()
         else:
             self.configApprentissageTestOral()
-        print(f"==> rang = {self.FrameG.rang}, taille = {len(self.FrameG.listePersonnes)}")
         if self.FrameG.listePersonnes and all(len(personne) >= 4 for personne in self.FrameG.listePersonnes):
             self.FrameG.maj()
         else:
@@ -368,7 +367,6 @@ class Fenetre(QMainWindow):
         QMessageBox.information(self, "Licence GPL-v3", texte)
     
     def quitter(self):
-        print ("Quitter")
         self.close()
            
 # ----------------------------------------------------

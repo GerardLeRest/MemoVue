@@ -178,8 +178,6 @@ class FrameGauche (QWidget):
         self.labelImage.setPixmap(pixmap)
 
     def majNomPrenom(self):
-        print("rang =", self.rang)
-        print("listePersonnes =", self.listePersonnes)
         self.prenom.setText(self.listePersonnes[self.rang][0])
         self.nom.setText(self.listePersonnes[self.rang][1])
             

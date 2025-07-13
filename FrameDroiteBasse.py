@@ -202,7 +202,6 @@ class FrameDroiteBasse (QWidget):
     def choisirSpecialite(self) -> None:
         """Sélectionner une option"""
         self.specialiteSelectionnee = self.comboBoxDroite.currentText()
-        print("Spécillité sélectionnée :", self.specialiteSelectionnee)
 
 # ----------------------------------------------------
 
