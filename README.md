@@ -29,7 +29,7 @@ Du bas vers le haut dans la zone en bas à droite :
 
 ## Vidéo
 
-[Vidéo de MémoVue](https://youtu.be/FgAwiuIiPuc)
+[Vidéo de MémoVue](https://youtu.be/PE2b6eUugHk)
 
 ## Installation
 
