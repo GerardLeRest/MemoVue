@@ -18,12 +18,14 @@ Du bas vers le haut dans la zone en bas à droite :
    - prénom seul
    - nom seul
 2. On peut sélectionner un mode aléatoire (dans le désordre).
-3. L’application propose plusieurs modes d’utilisation :
+3. On choisit le Département puis la fonction avec les deux combobox
+4. L’application propose plusieurs modes d’utilisation :
    - **Apprentissage** : affichage des personnes et de leurs informations.
    - **Test écrit** : l’utilisateur doit saisir les noms ou prénoms.
    - **Test oral** : affichage d’une photo. L’utilisateur doit chercher mentalement avant de voir la correction.
    - **Recherche** : permet de retrouver un élève à partir d’un nom ou prénom.
 4. Les quatre boutons sous l’image permettent de faire défiler les images sélectionnées.
+5. la zone de saisie (en haut à droite) est utilisé dans les tests écrits et de
 
 ## Vidéo
 
