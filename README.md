@@ -106,9 +106,5 @@ python ChoixOrganisme.pyw
 Ce projet est distribué sous licence GPL-v3.  
 © 2025 Gérard LE REST
 
-Les portraits utilisés dans ce projet proviennent de **Generated Photos**  
-→ https://generated.photos
-
-Images générées par intelligence artificielle, utilisées dans un cadre pédagogique non commercial.  
-Mention requise :  
-**“Image by Generated Photos (https://generated.photos), used with permission.”**
+Les portraits ont été générés par une intelligence artificielle et sont utilisés dans un cadre pédagogique non commercial.
+"Image by Generated Photos (https://generated.photos), used with permission."

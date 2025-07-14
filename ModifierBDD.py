@@ -19,32 +19,42 @@ class ModifierBDD:
 
         self.curs.execute('''
             SELECT 
-                e.prenom, 
-                e.nom, 
-                e.structure, 
-                GROUP_CONCAT(o.specialite, ', '), 
-                e.photo
-            FROM personnes e
-            LEFT JOIN personnes_specialites eo ON eo.id_personne = e.id
-            LEFT JOIN specialites o ON o.id = eo.id_specialite
-            GROUP BY e.id
+                p.prenom, 
+                p.nom, 
+                p.structure, 
+                GROUP_CONCAT(s.specialite, ', '), -- Exemple : "ALL2, TH"
+
+                p.photo
+            FROM personnes p
+            LEFT JOIN personnes_specialites ps ON ps.id_personne = p.id
+            LEFT JOIN specialites s ON s.id = ps.id_specialite
+            GROUP BY p.id
         ''')
 
-        for prenom, nom, structure, optionsStr, photo in self.curs.fetchall():
-            listeSpecialites = optionsStr.split(', ') if optionsStr else []
+        # sepcialitesStr correspond à GROUP_CONCAT(s.specialite, ', ')
+        for prenom, nom, structure, specialitesStr, photo in self.curs.fetchall():
+            # listeSpécialites = ["CAM","THE"] par exemple
+            listeSpecialites = specialitesStr.split(', ') if specialitesStr else []
             personne = [prenom, nom, structure, listeSpecialites, photo]
             self.listesPersonnes.append(personne)
 
     def listerStructures(self):
-        """Retourne la liste des noms de structures uniques"""
+        """retourne toutes les structures présentes dans la liste des personnes,
+        une seule fois chacune, triées alphabétiquement."""
         return sorted(set(personne[2] for personne in self.listesPersonnes))
 
     def personnesStructure(self, structureNom):
         """Retourne les personnes d’une structure spécifique"""
-        return [
-            personne for personne in self.listesPersonnes
-            if personne[2] == structureNom
+        listeFiltree = [
+            personne for personne in self.listesPersonnes # parcourir une liste
+            if personne[2] == structureNom # retourner dans la miste, personnes si on a la condition
         ]
+        return listeFiltree
+        # OU
+        # return [
+        #             personne for personne in self.listesPersonnes
+        #             if personne[2] == structureNom
+        #         ]
     
     def fermerConnexion(self):
         self.conn.close()
