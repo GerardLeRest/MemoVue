@@ -1,3 +1,4 @@
+import os
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QRadioButton,
     QPushButton, QSpacerItem, QSizePolicy, QMessageBox
@@ -68,7 +69,8 @@ class ChoixOrganisme(QWidget):
 
         # Logo centré
         labelLogo = QLabel()
-        pixmap = QPixmap("fichiers/logos/logoMemoVue.png")
+        cheminIcone = os.path.join("fichiers","logos", "logoMemoVue.png")
+        pixmap = QPixmap(cheminIcone)
         if not pixmap.isNull():
             pixmap = pixmap.scaledToWidth(100, Qt.SmoothTransformation)
             labelLogo.setPixmap(pixmap)
@@ -95,6 +97,7 @@ class ChoixOrganisme(QWidget):
             return
 
         self.memoVue = Fenetre(config=config)
+        self.memoVue.show()
         self.close()
 
 if __name__ == "__main__":
